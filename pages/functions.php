@@ -17,6 +17,7 @@ switch ($act) {
         $fileSizeVar= $_FILES["file"]["size"];
 		uploadCSV();
 		break;
+
     case 2:
         $fileVar= $_FILES["file"]["name"];
         csvToArrayProcess();
@@ -24,6 +25,14 @@ switch ($act) {
 
     case 3:
         sendDataTotblap_forms();
+        break;
+
+    case 4:
+        checkIfAlreadyExistPayroll();
+        break;
+
+    case 5:
+        deleteCSVData();
         break;
 
     default:
@@ -147,6 +156,54 @@ function sendDataTotblap_forms(){
 	$connection->close();
 
     //echo json_encode(array(array("error"=>0, "message"=>$este)));
+}
+
+function checkIfAlreadyExistPayroll(){
+
+	header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+    $titulo=$_POST['titulo'];
+
+	$sql=mysqli_query($connection,"SELECT tblap_forms.* FROM tblap_forms WHERE formTitle= '$titulo'");
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("error"=>0, "message"=>"No hay")));
+	}else{
+
+		echo json_encode(array(array("error"=>1, "message"=>"Ya lo hay")));
+
+	}
+
+	$connection->close(); 
+}
+
+function deleteCSVData(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+    $titulo=$_POST['titulo'];
+
+        $sql="DELETE FROM tblap_forms WHERE formTitle= '$titulo'";
+
+        if($connection->query($sql)===TRUE){
+
+        	$salida=array(array("error"=>1, "message"=>'Deleted!'));
+
+        }else{
+
+        	$salida=array(array("error"=>0, "message"=>"Error"));
+
+        }
+
+    echo json_encode($salida);
+
+	$connection->close();
+
 }
 
 ?>

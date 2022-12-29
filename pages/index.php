@@ -8,6 +8,10 @@ session_start();
 
             $opcion=$_GET["op"];
 
+            require_once 'topMenu.php';
+
+            require_once $opcion;
+
         }else{
 
             $opcion='menu.php';

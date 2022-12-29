@@ -299,6 +299,7 @@ async function createFormsButton(){
 		return;
 	}
 
+	//Comproibamos si comienza en lunes y termina en domingo
 	let ini= document.getElementById("payFrom").value;
 	let end= document.getElementById("payTo").value;
 
@@ -312,9 +313,90 @@ async function createFormsButton(){
 		return;
 	}
 
-	let sendData= await sendDataTotblapForms();
-	alert(sendData.message)
+	let checkIfAlreadyExist= await checkIfAlreadyExistPayroll(titulo); 
 
+	if(checkIfAlreadyExist.error==1){
+
+		let response=confirm("There is already a record for this CSV data file, overwrite it?");
+
+		if(response){
+	
+			let deleteCSVDataVar= await deleteCSVData(titulo);
+			if(deleteCSVDataVar.error==1){
+				let sendData= await sendDataTotblapForms();
+				if(sendData.error==1){
+					createInterface(titulo);
+				}
+				
+			}else{
+				alert("error!")
+			}
+		}
+
+	}else{
+
+		let sendData= await sendDataTotblapForms();
+		alert(sendData.message)
+	}
+
+}
+
+async function checkIfAlreadyExistPayroll(titulo){
+
+	let data= new FormData();
+
+	data.append('act', 4);
+	data.append('titulo', titulo);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	let json_response = await response.json();
+
+	return_data = { error: json_response[0].error, message: json_response[0].message };
+
+	if(json_response.error == 1)
+			throw new Error(json_response.message);
+
+	return return_data;
+	
+
+}
+
+async function deleteCSVData(titulo){
+
+	let data= new FormData();
+
+	data.append('act', 5);
+	data.append('titulo', titulo);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	let json_response = await response.json();
+
+	return_data = { error: json_response[0].error, message: json_response[0].message };
+
+	if(json_response.error == 1)
+			throw new Error(json_response.message);
+
+	return return_data;	
 }
 
 async function sendDataTotblapForms(){
@@ -366,6 +448,11 @@ function createFormsButton2(){
 
 	window.location.href="este.php?datos="+JSON.stringify(CSVData);
 
+}
+
+function createInterface(titulo){
+
+	window.location.href = "index.php?op=hoursForm.php&form="+titulo;
 }
 
 
