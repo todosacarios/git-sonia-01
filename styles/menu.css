@@ -1,0 +1,78 @@
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+#containerMenu{
+
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    padding: 15px;
+    height: 80vh;
+}
+
+#buttonsDiv{
+
+    text-align: center;
+    width: 90%;
+    margin: 0 auto;
+    padding: 15px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;   
+}
+
+#rightMenu{
+
+    display: grid;
+    grid-template-rows: 1fr 1fr 10fr;
+    row-gap: 15px;
+    width: 90%;
+    padding: 15px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+#newPayrollSubmenu{
+
+    display: grid;
+    row-gap: 15px;
+    font-size: 1.1em;
+    /* color: #494949; */
+    margin: 5px 0px 5px 0px;
+}
+
+#CSVDataDiv{
+
+    display: grid;
+    row-gap: 15px;
+}
+
+#CSVDataTable{
+    overflow: scroll;
+    font-size: 0.8em;
+}
+
+#CSVDataTable th {
+
+    font-weight: normal;
+    padding: 5px;
+    background-color: #a5a9aa;
+    text-align: left;
+}
+
+#CSVDataTable td {
+
+    font-weight: normal;
+    padding: 5px;
+}
+
+#CSVDataTable tr:nth-child(odd) {
+    background-color:#cdd1d3;
+}
+
+#CSVDataTable tr:nth-child(even) {
+    background-color:#ffffff;
+}
+
