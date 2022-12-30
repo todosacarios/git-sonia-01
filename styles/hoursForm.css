@@ -1,6 +1,6 @@
 #containerHoursForm{
 
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
     left: 0px;
     right: 0px;
@@ -8,10 +8,36 @@
 
 }
 
-#schedulesDiv{
+/* #schedulesHeader{
 
     display: flex;
     flex-direction: row;
-    width: 100%;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    min-width: 500px;
+    overflow-x: auto;
 }
+
+.schedulesHeaderSubDivs{
+
+    padding: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(195, 195, 195);
+} */
+
+/* #schedulesDiv{
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-width: 500px;
+    overflow-x: auto;
+} */
+
+/* .dayDiv{
+
+    padding: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(195, 195, 195);
+} */

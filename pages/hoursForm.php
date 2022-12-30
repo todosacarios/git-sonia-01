@@ -23,7 +23,6 @@
     <input type="date" id="ini" value='<?php echo $ini ?>' style="display: none">
     <input type="date" id="end" value='<?php echo $end ?>' style="display: none">
     <div id= "containerHoursForm">
-        <div id="schedulesDiv"></div>
     </div>
 </body>
 

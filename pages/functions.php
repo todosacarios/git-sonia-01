@@ -35,6 +35,10 @@ switch ($act) {
         deleteCSVData();
         break;
 
+    case 6:
+        employeesToProcess();
+        break;
+
     default:
         
 }
@@ -203,6 +207,45 @@ function deleteCSVData(){
     echo json_encode($salida);
 
 	$connection->close();
+
+}
+
+function employeesToProcess(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+    $formRef=$_POST['formRef'];
+
+	$sql=mysqli_query($connection,"SELECT formTitle, formEmpCode, formEmpName, formGrade, formSalary,
+    formCHrs, formContractDate, formHourlyRate 
+    FROM tblap_forms
+    WHERE formTitle='$formRef'
+    GROUP BY  formEmpCode
+    ORDER BY formEmpName");
+
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("id"=>0, "message"=>"No results")));
+
+	}else{
+
+		$salida=array();
+
+		while($resultado=mysqli_fetch_object($sql)){
+
+			array_push($salida,$resultado);
+
+		}
+
+		echo json_encode($salida);
+    }
+
+	$connection->close();
+
+    //echo json_encode(array(array("error"=>0, "message"=>"ggg")));
 
 }
 
