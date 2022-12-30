@@ -325,7 +325,7 @@ async function createFormsButton(){
 			if(deleteCSVDataVar.error==1){
 				let sendData= await sendDataTotblapForms();
 				if(sendData.error==1){
-					createInterface(titulo);
+					createInterface(titulo, ini, end);
 				}
 				
 			}else{
@@ -450,9 +450,9 @@ function createFormsButton2(){
 
 }
 
-function createInterface(titulo){
+function createInterface(titulo, ini, end){
 
-	window.location.href = "index.php?op=hoursForm.php&form="+titulo;
+	window.location.href = "index.php?op=hoursForm.php&form="+titulo+"&ini="+ini+"&end="+end;
 }
 
 

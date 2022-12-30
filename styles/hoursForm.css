@@ -1,0 +1,17 @@
+#containerHoursForm{
+
+    width: 80%;
+    margin: 0 auto;
+    left: 0px;
+    right: 0px;
+    background-color: rgb(235, 235, 235);
+
+}
+
+#schedulesDiv{
+
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex-wrap: wrap;
+}
