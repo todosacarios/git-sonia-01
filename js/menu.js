@@ -156,6 +156,7 @@ async function checkFileHeaders(){
 	return headersNotFound;
 }
 
+//Muestra el contenido del CSV en pantalla
 function showDataOnScreen(){
 
 	//console.log(CSVData);

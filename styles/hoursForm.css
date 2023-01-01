@@ -4,8 +4,36 @@
     margin: 0 auto;
     left: 0px;
     right: 0px;
-    background-color: rgb(235, 235, 235);
+}
 
+#hoursFormHeader{
+    padding: 5px;
+}
+
+#tblEmpsToProcessTable th{
+
+    text-align: left;
+    padding: 5px;
+    font-weight: normal;
+    background-color: #595e63 ;
+    color: white;
+}
+
+#tblEmpsToProcessTable td{
+
+    padding: 5px;
+}
+
+#tblEmpsToProcessTable tr:nth-child(odd) {
+    background-color:#c7d4dd;
+}
+#tblEmpsToProcessTable tr:nth-child(even) {
+    background-color:#ffffff;
+}
+
+#tblEmpsToProcessTable tr:hover{
+
+    background-color:#eedda4;
 }
 
 /* #schedulesHeader{

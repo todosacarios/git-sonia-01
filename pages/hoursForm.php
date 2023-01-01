@@ -23,6 +23,8 @@
     <input type="date" id="ini" value='<?php echo $ini ?>' style="display: none">
     <input type="date" id="end" value='<?php echo $end ?>' style="display: none">
     <div id= "containerHoursForm">
+        <div id="hoursFormHeader">kk</div>
+        <div id="hoursFormBody"><table id="tblEmpsToProcessTable"></table></div>
     </div>
 </body>
 
