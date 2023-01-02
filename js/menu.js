@@ -1,11 +1,51 @@
 //Variables generales
 var requiredHeaders=['empCode', 'empName', 'contractDate', 'pType', 'HRS', 'labDate'];
 var CSVData="";
+var listExistingFormsArray="";
 var errorsFoundInCSV="";
 
 window.addEventListener("load", inicio)
 
-function inicio(){}
+async function inicio(){
+
+	listExistingFormsArray= await listExistingForms();
+	if(listExistingFormsArray[0].idForm!=0){
+		paintTableOfForms();
+	}
+
+}
+
+async function listExistingForms(){
+
+	// formdata
+	let data = new FormData();
+	data.append('act', 7);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	// read json response from server
+	// success response example : {"error":0,"message":""}
+	// error response example : {"error":1,"message":"File type not allowed"}
+	let json_response = await response.json();
+
+	return_data= json_response;
+
+	// return_data = { error: json_response[0].error, message: json_response[0].message };
+
+	// if(json_response.error == 1)
+	// 	   throw new Error(json_response.message);
+
+	return return_data;	
+}
 
 document.querySelector("#upload-button").addEventListener('click', uploadButton);
 
@@ -226,38 +266,6 @@ function extraeFecha(modo){
 
 }
 
-function formatoFecha(laFecha, modo){
-
-// 	const monthNames = ["January", "February", "March", "April", "May", "June",
-//   "July", "August", "September", "October", "November", "December"];
-	const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-	var date = new Date(laFecha);
-	var day = date.getDate();
-	var month = date.getMonth() + 1;
-	var year = date.getFullYear();
-	var weekDay=date.getDay(); //0 for sunday
-	var monthName=monthNames[date.getMonth()]
-
-	if (month < 10) month = "0" + month;
-	if (day < 10) day = "0" + day;
-
-	switch(modo){
-		case 1:
-			var miFecha = year + "-" + month + "-" + day;
-			break;
-		case 2:
-			var miFecha = weekDay;
-			break;
-		case 3:
-			var miFecha = monthName+" "+ year.toString().slice(-2);
-			break;
-	}
-	
-	return miFecha;
-}
-
 document.getElementById("payFrom").addEventListener("change",function(){
 
 	let ini= document.getElementById("payFrom").value;
@@ -337,7 +345,8 @@ async function createFormsButton(){
 	}else{
 
 		let sendData= await sendDataTotblapForms();
-		alert(sendData.message)
+		createInterface(titulo, ini, end);
+		//alert(sendData.message)
 	}
 
 }
@@ -455,6 +464,50 @@ function createInterface(titulo, ini, end){
 
 	window.location.href = "index.php?op=hoursForm.php&form="+titulo+"&ini="+ini+"&end="+end;
 }
+
+function paintTableOfForms(){
+
+    let html="<tr><th>Date</th><th>Form name</th><th style='display:none'>Start</th><th style='display:none'>End</th></tr>"
+
+	for(x in listExistingFormsArray){
+		
+		let formDate= listExistingFormsArray[x].formDate;
+		let formDateF= formatoFecha(formDate,4)
+		let formTitle= listExistingFormsArray[x].formTitle;
+		let formStart= listExistingFormsArray[x].formStart;
+		let formStartF= formatoFecha(formStart,1)
+		let formEnd= listExistingFormsArray[x].formEnd;
+		let formEndF= formatoFecha(formEnd,1)
+		
+		html+="<tr>";
+		html+="<td style='text-align: left'>"+formDateF+"</td>";
+		html+="<td style='text-align: left'>"+formTitle+"</td>";
+		html+="<td style='text-align: left; display:none'>"+formStartF+"</td>";
+		html+="<td style='text-align: left; display:none'>"+formEndF+"</td>";
+		html+="</tr>";
+	}
+
+    document.getElementById("tableOfPrevForms").innerHTML=html;
+}
+
+//Captura los datos del listado para abrir detalle
+document.getElementById("tableOfPrevForms").addEventListener("mouseover",abrirDetalle);
+
+	function abrirDetalle(){
+
+		var table=document.getElementById("tableOfPrevForms");
+
+			for(var i = 0; i < table.rows.length; i++){
+				table.rows[i].onclick = function(){
+
+					let titulo=this.cells[1].innerText;
+					let ini=this.cells[2].innerText;
+					let end=this.cells[3].innerText;
+
+					window.location.href = "index.php?op=hoursForm.php&form="+titulo+"&ini="+ini+"&end="+end;
+				};
+			};
+	};
 
 
 

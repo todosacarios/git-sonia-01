@@ -38,11 +38,13 @@
                     <button id="createFormsButton2" class="myButtons">Create Forms2</button>
                     <p id="createFormsErrorMessage"></p>
                 </div>
+                <div id="listOfPrevForms"><table id="tableOfPrevForms" class="tblResults"></table></div>
             </div>
         </div>
     </div>
 </body>
 
 <script type="text/javascript" src="../js/menu.js"></script>
+<script type="text/javascript" src="../js/utilities.js"></script>
 
 </html>

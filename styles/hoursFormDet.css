@@ -1,0 +1,53 @@
+#hrsFormDetHeader, #hrsFormDetBody{
+
+    display: grid;
+    /* grid-template-columns: repeat(6, 1fr); */
+    grid-template-columns: 20% 20% 10% 20% 10% 20%;
+    grid-template-rows: minmax(100px, auto);
+    width: 90%;
+    margin: 15px auto;
+    left: 0;
+    right: 0; 
+    border-width: 1px;
+}
+
+.two{
+
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.three, .four, .five, .six{
+
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);  
+}
+
+.myBorder{
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(59, 59, 59);
+}
+
+.orangeBG{
+    background-color: rgb(229, 194, 128);
+}
+
+#hrsFormDetHeader p, #hrsFormDetHeader input{
+
+    margin: 5px;
+}
+
+#hrsFormDetHeader input{
+
+    width: 90%;
+    background-color: transparent;
+    border-style: none;
+    text-align: right;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+
+

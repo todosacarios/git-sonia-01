@@ -10,7 +10,7 @@
     padding: 5px;
 }
 
-#tblEmpsToProcessTable th{
+/* #tblEmpsToProcessTable th{
 
     text-align: left;
     padding: 5px;
@@ -34,7 +34,7 @@
 #tblEmpsToProcessTable tr:hover{
 
     background-color:#eedda4;
-}
+} */
 
 /* #schedulesHeader{
 

@@ -24,9 +24,10 @@
     <input type="date" id="end" value='<?php echo $end ?>' style="display: none">
     <div id= "containerHoursForm">
         <div id="hoursFormHeader">kk</div>
-        <div id="hoursFormBody"><table id="tblEmpsToProcessTable"></table></div>
+        <div id="hoursFormBody"><table id="tblEmpsToProcessTable" class="tblResults"></table></div>
     </div>
 </body>
 
 <script type="text/javascript" src="../js/hoursForm.js"></script>
+<script type="text/javascript" src="../js/utilities.js"></script>
 </html>

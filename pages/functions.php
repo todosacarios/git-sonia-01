@@ -39,6 +39,13 @@ switch ($act) {
         employeesToProcess();
         break;
 
+    case 7:
+        listExistingForms();
+        break;
+    case 8:
+        empHours();
+        break;
+
     default:
         
 }
@@ -246,6 +253,71 @@ function employeesToProcess(){
 	$connection->close();
 
     //echo json_encode(array(array("error"=>0, "message"=>"ggg")));
+
+}
+
+function listExistingForms(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+	$sql=mysqli_query($connection,"SELECT formTitle, formDate, formStart, formEnd
+    FROM tblap_forms
+    GROUP BY  formTitle
+    ORDER BY formDate");
+
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("idForm"=>0, "message"=>"No results")));
+
+	}else{
+
+		$salida=array();
+
+		while($resultado=mysqli_fetch_object($sql)){
+
+			array_push($salida,$resultado);
+
+		}
+
+		echo json_encode($salida);
+    }
+
+	$connection->close();  
+}
+
+function empHours(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+    $formRef=$_POST['formRef'];
+    $empCode=$_POST['empCode'];
+
+	$sql=mysqli_query($connection,"SELECT * FROM tblap_forms WHERE formEmpCode= $empCode AND formTitle= '$formRef' ORDER BY formDate");
+
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("idForm"=>0, "message"=>"No results")));
+
+	}else{
+
+		$salida=array();
+
+		while($resultado=mysqli_fetch_object($sql)){
+
+			array_push($salida,$resultado);
+
+		}
+
+		echo json_encode($salida);
+    }
+
+	$connection->close();  
 
 }
 

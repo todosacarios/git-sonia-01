@@ -1,0 +1,6 @@
+empCode,empName,contractDate,contractHrs,pType,HRS,labDate
+1,Manolo Fernandez,2022-01-01,39,1,3.5,2022-12-26
+2,Francisco Perez,2021-12-01,20.5,2,4,2022-12-30
+3,Gonzalo Alvarez,2022-05-05,15,2,2,2023-01-15
+4,Luis Alcantara,2022-03-05,39,2,4.1,2023-01-22
+4,Luis Alcantara,2022-03-05,39,2,6,2023-01-22
