@@ -22,6 +22,7 @@ function formatoFecha(laFecha, modo){
                 var miFecha = year + "-" + month + "-" + day;
                 break;
             case 2:
+                //0 domingo
                 var miFecha = weekDay;
                 break;
             case 3:

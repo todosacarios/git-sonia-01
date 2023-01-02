@@ -76,19 +76,62 @@ function fillHoursTable(){
     //El primer dia no agregamos uno a la fecha
     let valor=0;
 
-    let html="<tr>";
+    let html="";
+
+    html+= "<tr>";
 
     for (let i=0; i<= days_difference; i++){
 
         let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateNo =formatoFecha(gridDate,5);
-        let gridWeekDayNmae =formatoFecha(gridDate,6);
-        html +="<td>"+gridDateNo+"</td>";
+        let gridDateNo= formatoFecha(gridDate,5);
+        let gridWeekDayName= formatoFecha(gridDate,6);
+        let dayColor="#000";
+        if(gridWeekDayName=="Sun"){
+            dayColor="#fc0303";
+        }
+        html +="<th style='color:"+dayColor+"'>"+gridDateNo+"</th>";
         valor=1;
-  
     }
 
     html +="</tr>";
+
+    html+= "<tr>";
+
+    for (let i=0; i<= days_difference; i++){
+
+        let gridDate= date1.setDate(date1.getDate()+valor);
+        let gridDateNo= formatoFecha(gridDate,5);
+        let gridWeekDayName= formatoFecha(gridDate,6);
+        let dayColor="#000";
+        if(gridWeekDayName=="Sun"){
+            dayColor="#fc0303";
+        }
+        html +="<td tipo=0 style='color:"+dayColor+"'>"+gridWeekDayName+"</td>";
+        valor=1;
+    }
+
+    html +="</tr>";
+
+    html+= "<tr>";
+
+    for (let i=0; i<= days_difference; i++){
+
+        let gridDate= date1.setDate(date1.getDate()+valor);
+        let gridDateNo= formatoFecha(gridDate,5);
+        let gridWeekDayName= formatoFecha(gridDate,6);
+        let dato=0;
+        for(x in empHoursArray){
+            if(gridDate==empHoursArray[x].formDate){
+                dato=1;
+            }
+        }
+
+        html +="<td>"+dato+"</td>";
+        valor=1;
+    }
+
+    html +="</tr>";
+
     hoursTable.innerHTML= html;
 }
 

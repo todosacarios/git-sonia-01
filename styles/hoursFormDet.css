@@ -1,4 +1,4 @@
-#hrsFormDetHeader, #hrsFormDetBody{
+#hrsFormDetHeader{
 
     display: grid;
     /* grid-template-columns: repeat(6, 1fr); */
@@ -9,6 +9,19 @@
     left: 0;
     right: 0; 
     border-width: 1px;
+}
+
+#hrsFormDetBody{
+
+    display: grid;
+    /* grid-template-columns: repeat(6, 1fr); */
+    grid-template-columns: 1fr;
+    width: 90%;
+    margin: 15px auto;
+    left: 0;
+    right: 0; 
+    border-width: 1px;
+
 }
 
 .two{
@@ -48,6 +61,26 @@
     font-weight: bold;
     font-size: 1.1em;
 }
+
+#hoursTable{
+
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+#hoursTable td, #hoursTable th{
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(59, 59, 59); 
+    margin: 0px;
+    border-spacing: 0px;
+    text-align: center;
+    padding: 2px;
+}
+
+
 
 
 
