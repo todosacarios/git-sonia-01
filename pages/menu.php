@@ -36,7 +36,7 @@
                 <div id="createFormsButtonDiv">
                     <button id="createFormsButton" class="myButtons">Create Forms</button>
                     <button id="createFormsButton2" class="myButtons">Create Forms2</button>
-                    <p id="createFormsErrorMessage"></p>
+                    <p id="createFormsErrorMessage" style="color: #d91204; margin: 5px;"></p>
                 </div>
                 <div id="listOfPrevForms"><table id="tableOfPrevForms" class="tblResults"></table></div>
             </div>

@@ -15,6 +15,8 @@ async function inicio(){
     empCode=document.getElementById("empCode").value;
 
     empHoursArray= await empHours();
+
+    //console.log(empHoursArray)
     
     document.getElementById("formEmpName").value= empHoursArray[0].formEmpName;
     document.getElementById("formGrade").value= empHoursArray[0].formGrade;
@@ -78,13 +80,16 @@ function fillHoursTable(){
 
     let html="";
 
-    html+= "<tr>";
+    //Day Numbers
+
+    html+= "<tr><th></th>";
 
     for (let i=0; i<= days_difference; i++){
 
         let gridDate= date1.setDate(date1.getDate()+valor);
         let gridDateNo= formatoFecha(gridDate,5);
         let gridWeekDayName= formatoFecha(gridDate,6);
+        
         let dayColor="#000";
         if(gridWeekDayName=="Sun"){
             dayColor="#fc0303";
@@ -95,13 +100,21 @@ function fillHoursTable(){
 
     html +="</tr>";
 
-    html+= "<tr>";
+    //Week Days
+
+    date1= new Date(ini); 
+    date2= new Date(end);
+
+    valor=0;
+
+    html+= "<tr><td></td>";
 
     for (let i=0; i<= days_difference; i++){
 
         let gridDate= date1.setDate(date1.getDate()+valor);
         let gridDateNo= formatoFecha(gridDate,5);
         let gridWeekDayName= formatoFecha(gridDate,6);
+        
         let dayColor="#000";
         if(gridWeekDayName=="Sun"){
             dayColor="#fc0303";
@@ -112,21 +125,77 @@ function fillHoursTable(){
 
     html +="</tr>";
 
-    html+= "<tr>";
+    //Normal Hrs
+
+    date1= new Date(ini); 
+    date2= new Date(end);
+
+    valor=0;
+
+    html+= "<tr><td>Normal</td>";
 
     for (let i=0; i<= days_difference; i++){
 
         let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateNo= formatoFecha(gridDate,5);
-        let gridWeekDayName= formatoFecha(gridDate,6);
-        let dato=0;
+        let gridDateF= formatoFecha(gridDate,1);
+        //let gridDateNo= formatoFecha(gridDate,5);
+        //let gridWeekDayName= formatoFecha(gridDate,6);
+        let formHRS=0;
+        let idForm=0;
+        let formPType=1;
+
         for(x in empHoursArray){
-            if(gridDate==empHoursArray[x].formDate){
-                dato=1;
+
+            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==1){
+
+                idForm= empHoursArray[x].idForm;
+                formHRS= empHoursArray[x].formHRS;
+                
             }
         }
 
-        html +="<td>"+dato+"</td>";
+        html +="<td tipo=1 formLabDate="+gridDateF+
+        " idForm="+idForm+
+        " formPType="+formPType+
+        ">"+formHRS+"</td>";
+        valor=1;
+    }
+
+    html +="</tr>";
+
+    //Extra Hrs
+
+    date1= new Date(ini); 
+    date2= new Date(end);
+
+    valor=0;
+
+    html+= "<tr><td>Extra</td>";
+
+    for (let i=0; i<= days_difference; i++){
+
+        let gridDate= date1.setDate(date1.getDate()+valor);
+        let gridDateF= formatoFecha(gridDate,1);
+        //let gridDateNo= formatoFecha(gridDate,5);
+        //let gridWeekDayName= formatoFecha(gridDate,6);
+        let formHRS=0;
+        let idForm=0;
+        let formPType=2;
+
+        for(x in empHoursArray){
+
+            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==2){
+
+                idForm= empHoursArray[x].idForm;
+                formHRS= empHoursArray[x].formHRS;
+                
+            }
+        }
+
+        html +="<td tipo=1 formLabDate="+gridDateF+
+        " idForm="+idForm+
+        " formPType="+formPType+
+        ">"+formHRS+"</td>";
         valor=1;
     }
 
@@ -135,38 +204,27 @@ function fillHoursTable(){
     hoursTable.innerHTML= html;
 }
 
+document.addEventListener('click', function(e) {
 
+    if(e.target.tagName=="TD" && e.target.getAttribute("tipo")==1){
+        var formLabDate = e.target.getAttribute("formLabDate");
+        var idForm = e.target.getAttribute("idForm");
+        var formPType = e.target.getAttribute("formPType");
+        alert(formLabDate +" "+idForm+" "+formPType);
+    }
+    
+});
 
+// document.getElementById("hoursTable").addEventListener("mouseover",abrirDetalle);
 
-// let date1= new Date(ini); 
-// let date2= new Date(end);
+// 	function abrirDetalle(){
 
-// //calculate time difference  
-// var time_difference=date2.getTime()-date1.getTime();
+// 		var table=document.getElementById("hoursTable");
 
-// //calculate days difference by dividing total milliseconds in a day  
-// var days_difference=time_difference/(1000*60*60*24);
-// console.log(days_difference);
-// let schedulesDiv=document.getElementById("schedulesDiv");
+// 			for(var i = 0; i < table.rows.length; i++){
+// 				table.rows[i].onclick = function(){
 
-// //El primer dia no agregamos uno a la fecha
-// let valor=0;
-
-// // let hrsTable=document.createElement("table");
-// //     hrsTable.classList.add("hrsTable");
-// //     schedulesDiv.append(hrsTable);
-// //     let hrsTableRow=document.getElementsByClassName("hrsTable");
-//     //hrsTableRow.append("tr");
-
-// for (let i=0; i<= days_difference; i++){
-
-//     let dayDiv=document.createElement("div");
-//     dayDiv.classList.add("dayDiv");
-//     schedulesDiv.append(dayDiv);
-//     let gridDate= date1.setDate(date1.getDate()+valor);
-//     let gridDateNo =formatoFecha(gridDate,5);
-//     let gridWeekDayNmae =formatoFecha(gridDate,6);
-//     dayDiv.append(gridWeekDayNmae+" "+gridDateNo)
-//     valor=1;
-
-// }
+// 					let hrs=this.cells[1].innerText;				
+// 				};
+// 			};
+// };

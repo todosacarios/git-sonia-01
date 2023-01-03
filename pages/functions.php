@@ -142,9 +142,12 @@ function sendDataTotblap_forms(){
         $empName= $item['empName'];
         $contractHrs= $item['contractHrs'];
         $contractDate= $item['contractDate'];
+        $labDate= $item['labDate'];
+        $pType= $item['pType'];
+        $HRS= $item['HRS'];
 
-        $sql="INSERT INTO tblap_forms (formDate, formTitle, formStart, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate)
-        VALUES ('$toDay', '$payRollName', '$payFrom', '$payTo', $empCode, '$empName','',0,'$contractHrs', '$contractDate',0)";
+        $sql="INSERT INTO tblap_forms (formDate, formTitle, formStart, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate, formLabDate, formPType, formHRS)
+        VALUES ('$toDay', '$payRollName', '$payFrom', '$payTo', $empCode, '$empName','',0,'$contractHrs', '$contractDate',0, '$labDate', $pType, $HRS )";
 
         //, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate
 
