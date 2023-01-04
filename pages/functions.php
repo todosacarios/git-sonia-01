@@ -42,8 +42,13 @@ switch ($act) {
     case 7:
         listExistingForms();
         break;
+
     case 8:
         empHours();
+        break;
+
+    case 9:
+        BHData();
         break;
 
     default:
@@ -306,6 +311,36 @@ function empHours(){
 	if(mysqli_num_rows($sql)==0){
 
 		echo json_encode(array(array("idForm"=>0, "message"=>"No results")));
+
+	}else{
+
+		$salida=array();
+
+		while($resultado=mysqli_fetch_object($sql)){
+
+			array_push($salida,$resultado);
+
+		}
+
+		echo json_encode($salida);
+    }
+
+	$connection->close();  
+
+}
+
+function BHData(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+	$sql=mysqli_query($connection,"SELECT * FROM tblap_bh");
+
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("idbh"=>0, "message"=>"No results")));
 
 	}else{
 

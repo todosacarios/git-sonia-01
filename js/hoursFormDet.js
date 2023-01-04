@@ -4,6 +4,7 @@ let end="";
 let formRef="";
 let empCode="";
 let empHoursArray="";
+let BHArray="";
 
 window.addEventListener("load", inicio);
 
@@ -14,9 +15,10 @@ async function inicio(){
     formRef=document.getElementById("formRef").value;
     empCode=document.getElementById("empCode").value;
 
+    BHArray= await BHData();
     empHoursArray= await empHours();
 
-    //console.log(empHoursArray)
+    //console.log(BHArray)
     
     document.getElementById("formEmpName").value= empHoursArray[0].formEmpName;
     document.getElementById("formGrade").value= empHoursArray[0].formGrade;
@@ -26,6 +28,38 @@ async function inicio(){
     document.getElementById("formHourlyRate").value= empHoursArray[0].formHourlyRate;
 
     fillHoursTable();
+}
+
+async function BHData(){
+
+	// formdata
+	let data = new FormData();
+	data.append('act', 9);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	// read json response from server
+	// success response example : {"error":0,"message":""}
+	// error response example : {"error":1,"message":"File type not allowed"}
+	let json_response = await response.json();
+
+    return_data=json_response;
+
+	// return_data = { error: json_response[0].id, message: json_response[0].message };
+
+	// if(json_response.error == 1)
+	// 	   throw new Error(json_response.message);	
+
+	return return_data;  
 }
 
 async function empHours(){
@@ -81,7 +115,7 @@ function fillHoursTable(){
     let html="";
 
     //Day Numbers
-    //let iniF=formatoFecha(date1.setDate(date1.getDate()),7);
+
     let iniF=formatoFecha(ini,7);
     let endF=formatoFecha(end,7);
     html+= "<tr><th>Weeks "+iniF+" to "+endF+"</th>";
@@ -91,12 +125,28 @@ function fillHoursTable(){
         let gridDate= date1.setDate(date1.getDate()+valor);
         let gridDateNo= formatoFecha(gridDate,5);
         let gridWeekDayName= formatoFecha(gridDate,6);
-        
+        let gridDateF= formatoFecha(gridDate,1);
+
         let dayColor="#000";
-        if(gridWeekDayName=="Sun"){
-            dayColor="#fc0303";
+        let dayBColor="#ffffff";
+
+        for(x in BHArray){
+
+            if(gridDateF== BHArray[x].datebh){
+                
+                dayColor="#ffffff";
+                dayBColor="#057d02";
+            }
         }
-        html +="<th style='color:"+dayColor+"'>"+gridDateNo+"</th>";
+
+        if(gridWeekDayName=="Sun"){
+
+            dayColor="#ffffff";
+            dayBColor="#fc0303";
+        }
+
+        html +="<th style='color:"+dayColor+"; background-color:"+dayBColor+";'>"+gridDateNo+"</th>";
+
         valor=1;
     }
 
@@ -116,12 +166,26 @@ function fillHoursTable(){
         let gridDate= date1.setDate(date1.getDate()+valor);
         let gridDateNo= formatoFecha(gridDate,5);
         let gridWeekDayName= formatoFecha(gridDate,6);
+        let gridDateF= formatoFecha(gridDate,1);
         
         let dayColor="#000";
+        let dayBColor="#ffffff";
+
+        for(x in BHArray){
+
+            if(gridDateF== BHArray[x].datebh){
+                
+                dayColor="#057d02";
+                //dayBColor="#057d02";
+            }
+        }
+
         if(gridWeekDayName=="Sun"){
+
             dayColor="#fc0303";
         }
-        html +="<td tipo=0 style='color:"+dayColor+"'>"+gridWeekDayName+"</td>";
+
+        html +="<td tipo=0 style='color:"+dayColor+"; background-color:"+dayBColor+";'>"+gridWeekDayName+"</td>";
         valor=1;
     }
 
@@ -143,9 +207,18 @@ function fillHoursTable(){
         //let gridDateNo= formatoFecha(gridDate,5);
         //let gridWeekDayName= formatoFecha(gridDate,6);
         let dato="";
-        let formHRS="";
+        let formHRS=0;
         let idForm=0;
         let formPType=1;
+        let isBH=0;
+
+        for(x in BHArray){
+
+            if(gridDateF== BHArray[x].datebh){
+                
+                isBH=1;
+            }
+        }
 
         for(x in empHoursArray){
 
@@ -161,6 +234,7 @@ function fillHoursTable(){
         " idForm="+idForm+
         " formPType="+formPType+
         " formHRS="+formHRS+
+        " isBH="+isBH+
         ">"+dato+"</td>";
         valor=1;
     }
@@ -186,6 +260,15 @@ function fillHoursTable(){
         let formHRS=0;
         let idForm=0;
         let formPType=2;
+        let isBH=0;
+
+        for(x in BHArray){
+
+            if(gridDateF== BHArray[x].datebh){
+                
+                isBH=1;
+            }
+        }
 
         for(x in empHoursArray){
 
@@ -194,7 +277,6 @@ function fillHoursTable(){
                 idForm= empHoursArray[x].idForm;
                 formHRS= empHoursArray[x].formHRS;
                 dato= empHoursArray[x].formHRS;
-                
             }
         }
 
@@ -202,6 +284,7 @@ function fillHoursTable(){
         " idForm="+idForm+
         " formPType="+formPType+
         " formHRS="+formHRS+
+        " isBH="+isBH+
         ">"+dato+"</td>";
         valor=1;
     }
@@ -218,21 +301,8 @@ document.addEventListener('click', function(e) {
         var idForm = e.target.getAttribute("idForm");
         var formPType = e.target.getAttribute("formPType");
         var formHRS = e.target.getAttribute("formHRS");
-        alert(formLabDate +" "+idForm+" "+formPType);
+        var isBH = e.target.getAttribute("isBH");
+        alert(formLabDate +" idForm: "+idForm+" formPType: "+formPType +" formHRS: "+formHRS +" isBH: "+isBH);
     }
     
 });
-
-// document.getElementById("hoursTable").addEventListener("mouseover",abrirDetalle);
-
-// 	function abrirDetalle(){
-
-// 		var table=document.getElementById("hoursTable");
-
-// 			for(var i = 0; i < table.rows.length; i++){
-// 				table.rows[i].onclick = function(){
-
-// 					let hrs=this.cells[1].innerText;				
-// 				};
-// 			};
-// };
