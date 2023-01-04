@@ -41,6 +41,10 @@ function formatoFecha(laFecha, modo){
                 //Mon
                 var miFecha = weekDayName[weekDay];
                 break;
+            case 7:
+                //28 Dec
+                var miFecha = day + " " + monthName;
+                break;
         }
         
         return miFecha;

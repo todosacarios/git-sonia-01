@@ -81,8 +81,10 @@ function fillHoursTable(){
     let html="";
 
     //Day Numbers
-
-    html+= "<tr><th></th>";
+    //let iniF=formatoFecha(date1.setDate(date1.getDate()),7);
+    let iniF=formatoFecha(ini,7);
+    let endF=formatoFecha(end,7);
+    html+= "<tr><th>Weeks "+iniF+" to "+endF+"</th>";
 
     for (let i=0; i<= days_difference; i++){
 
@@ -98,7 +100,7 @@ function fillHoursTable(){
         valor=1;
     }
 
-    html +="</tr>";
+    html +="<th></th><th></th><th></th></tr>";
 
     //Week Days
 
@@ -107,7 +109,7 @@ function fillHoursTable(){
 
     valor=0;
 
-    html+= "<tr><td></td>";
+    html+= "<tr><td>DUTIES (in Hours)</td>";
 
     for (let i=0; i<= days_difference; i++){
 
@@ -123,7 +125,7 @@ function fillHoursTable(){
         valor=1;
     }
 
-    html +="</tr>";
+    html +="<td></td><td></td><td></td></tr>";
 
     //Normal Hrs
 
@@ -140,7 +142,8 @@ function fillHoursTable(){
         let gridDateF= formatoFecha(gridDate,1);
         //let gridDateNo= formatoFecha(gridDate,5);
         //let gridWeekDayName= formatoFecha(gridDate,6);
-        let formHRS=0;
+        let dato="";
+        let formHRS="";
         let idForm=0;
         let formPType=1;
 
@@ -150,18 +153,19 @@ function fillHoursTable(){
 
                 idForm= empHoursArray[x].idForm;
                 formHRS= empHoursArray[x].formHRS;
-                
+                dato= empHoursArray[x].formHRS;
             }
         }
 
         html +="<td tipo=1 formLabDate="+gridDateF+
         " idForm="+idForm+
         " formPType="+formPType+
-        ">"+formHRS+"</td>";
+        " formHRS="+formHRS+
+        ">"+dato+"</td>";
         valor=1;
     }
 
-    html +="</tr>";
+    html +="<td></td><td></td><td></td></tr>";
 
     //Extra Hrs
 
@@ -178,6 +182,7 @@ function fillHoursTable(){
         let gridDateF= formatoFecha(gridDate,1);
         //let gridDateNo= formatoFecha(gridDate,5);
         //let gridWeekDayName= formatoFecha(gridDate,6);
+        let dato="";
         let formHRS=0;
         let idForm=0;
         let formPType=2;
@@ -188,6 +193,7 @@ function fillHoursTable(){
 
                 idForm= empHoursArray[x].idForm;
                 formHRS= empHoursArray[x].formHRS;
+                dato= empHoursArray[x].formHRS;
                 
             }
         }
@@ -195,11 +201,12 @@ function fillHoursTable(){
         html +="<td tipo=1 formLabDate="+gridDateF+
         " idForm="+idForm+
         " formPType="+formPType+
-        ">"+formHRS+"</td>";
+        " formHRS="+formHRS+
+        ">"+dato+"</td>";
         valor=1;
     }
 
-    html +="</tr>";
+    html +="<td></td><td></td><td></td></tr>";
 
     hoursTable.innerHTML= html;
 }
