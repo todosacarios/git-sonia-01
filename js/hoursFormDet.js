@@ -5,6 +5,8 @@ let formRef="";
 let empCode="";
 let empHoursArray="";
 let BHArray="";
+let totalNormalHRS=0;
+let totalExtraHRS=0;
 
 window.addEventListener("load", inicio);
 
@@ -86,7 +88,7 @@ async function empHours(){
 	// error response example : {"error":1,"message":"File type not allowed"}
 	let json_response = await response.json();
 
-    return_data=json_response;
+    return_data= json_response;
 
 	// return_data = { error: json_response[0].id, message: json_response[0].message };
 
@@ -197,6 +199,7 @@ function fillHoursTable(){
     date2= new Date(end);
 
     valor=0;
+    totalNormalHRS= 0;
 
     html+= "<tr><td>Normal</td>";
 
@@ -227,6 +230,7 @@ function fillHoursTable(){
                 idForm= empHoursArray[x].idForm;
                 formHRS= empHoursArray[x].formHRS;
                 dato= empHoursArray[x].formHRS;
+                totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
             }
         }
 
@@ -239,7 +243,7 @@ function fillHoursTable(){
         valor=1;
     }
 
-    html +="<td></td><td></td><td></td></tr>";
+    html +="<td id='totalNormalHRS'>"+totalNormalHRS+"</td><td></td><td></td></tr>";
 
     //Extra Hrs
 
@@ -277,6 +281,7 @@ function fillHoursTable(){
                 idForm= empHoursArray[x].idForm;
                 formHRS= empHoursArray[x].formHRS;
                 dato= empHoursArray[x].formHRS;
+                totalExtraHRS=totalExtraHRS+ parseFloat(formHRS);
             }
         }
 
@@ -289,7 +294,62 @@ function fillHoursTable(){
         valor=1;
     }
 
-    html +="<td></td><td></td><td></td></tr>";
+    html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
+    html +="<tr><td>OVERTIME</td></tr>";
+
+    //FRs
+
+    //Extra Hrs
+
+    date1= new Date(ini); 
+    date2= new Date(end);
+
+    valor=0;
+
+    html+= "<tr><td>Extra</td>";
+
+    for (let i=0; i<= days_difference; i++){
+
+        let gridDate= date1.setDate(date1.getDate()+valor);
+        let gridDateF= formatoFecha(gridDate,1);
+        //let gridDateNo= formatoFecha(gridDate,5);
+        //let gridWeekDayName= formatoFecha(gridDate,6);
+        let dato="";
+        let formHRS=0;
+        let idForm=0;
+        let formPType=2;
+        let isBH=0;
+
+        for(x in BHArray){
+
+            if(gridDateF== BHArray[x].datebh){
+                
+                isBH=1;
+            }
+        }
+
+        for(x in empHoursArray){
+
+            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==2){
+
+                idForm= empHoursArray[x].idForm;
+                formHRS= empHoursArray[x].formHRS;
+                dato= empHoursArray[x].formHRS;
+                totalExtraHRS=totalExtraHRS+ parseFloat(formHRS);
+            }
+        }
+
+        html +="<td tipo=1 formLabDate="+gridDateF+
+        " idForm="+idForm+
+        " formPType="+formPType+
+        " formHRS="+formHRS+
+        " isBH="+isBH+
+        ">"+dato+"</td>";
+        valor=1;
+    }
+
+    html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
+    html +="<tr><td>OVERTIME</td></tr>";
 
     hoursTable.innerHTML= html;
 }

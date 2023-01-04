@@ -154,8 +154,6 @@ function sendDataTotblap_forms(){
         $sql="INSERT INTO tblap_forms (formDate, formTitle, formStart, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate, formLabDate, formPType, formHRS)
         VALUES ('$toDay', '$payRollName', '$payFrom', '$payTo', $empCode, '$empName','',0,'$contractHrs', '$contractDate',0, '$labDate', $pType, $HRS )";
 
-        //, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate
-
         if($connection->query($sql)===TRUE){
 
         	$salida=array(array("error"=>1, "message"=>'Service added successfully'));
@@ -163,14 +161,11 @@ function sendDataTotblap_forms(){
         }else{
 
         	$salida=array(array("error"=>0, "message"=>"Error"));
-
         }
     }
 
     //$salida=array(array("error"=>1, "message"=>'Service added successfully'));
     echo json_encode($salida);
-
-    //, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate
 
 	$connection->close();
 
