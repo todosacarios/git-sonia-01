@@ -217,6 +217,7 @@ document.addEventListener('click', function(e) {
         var formLabDate = e.target.getAttribute("formLabDate");
         var idForm = e.target.getAttribute("idForm");
         var formPType = e.target.getAttribute("formPType");
+        var formHRS = e.target.getAttribute("formHRS");
         alert(formLabDate +" "+idForm+" "+formPType);
     }
     
