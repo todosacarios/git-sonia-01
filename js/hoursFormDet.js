@@ -3,10 +3,12 @@ let ini="";
 let end="";
 let formRef="";
 let empCode="";
-let empHoursArray="";
-let BHArray="";
+let empHoursArray=[];
+let BHArray=[];
+let servsArray=[];
 let totalNormalHRS=0;
 let totalExtraHRS=0;
+let totalExtraHRSFR=0;
 
 window.addEventListener("load", inicio);
 
@@ -19,6 +21,7 @@ async function inicio(){
 
     BHArray= await BHData();
     empHoursArray= await empHours();
+    servsArray= await servsData();
 
     //console.log(BHArray)
     
@@ -98,6 +101,38 @@ async function empHours(){
 	return return_data;    
 }
 
+async function servsData(){
+
+	// formdata
+	let data = new FormData();
+	data.append('act', 10);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	// read json response from server
+	// success response example : {"error":0,"message":""}
+	// error response example : {"error":1,"message":"File type not allowed"}
+	let json_response = await response.json();
+
+    return_data= json_response;
+
+	// return_data = { error: json_response[0].id, message: json_response[0].message };
+
+	// if(json_response.error == 1)
+	// 	   throw new Error(json_response.message);	
+
+	return return_data;    
+}
+
 function fillHoursTable(){
 
     let date1= new Date(ini); 
@@ -116,253 +151,483 @@ function fillHoursTable(){
 
     let html="";
 
-    //Day Numbers
+    //Day Numbers ############################################################################################################
 
-    let iniF=formatoFecha(ini,7);
-    let endF=formatoFecha(end,7);
-    html+= "<tr><th>Weeks "+iniF+" to "+endF+"</th>";
+    dayNumbers();
 
-    for (let i=0; i<= days_difference; i++){
+    function dayNumbers(){
 
-        let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateNo= formatoFecha(gridDate,5);
-        let gridWeekDayName= formatoFecha(gridDate,6);
-        let gridDateF= formatoFecha(gridDate,1);
+        let iniF=formatoFecha(ini,7);
+        let endF=formatoFecha(end,7);
+        html+= "<tr><th>Weeks "+iniF+" to "+endF+"</th>";
 
-        let dayColor="#000";
-        let dayBColor="#ffffff";
+        for (let i=0; i<= days_difference; i++){
 
-        for(x in BHArray){
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateNo= formatoFecha(gridDate,5);
+            let gridWeekDayName= formatoFecha(gridDate,6);
+            let gridDateF= formatoFecha(gridDate,1);
 
-            if(gridDateF== BHArray[x].datebh){
-                
-                dayColor="#ffffff";
-                dayBColor="#057d02";
+            let dayColor="#000";
+            let dayBColor="#ffffff";
+
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    dayColor="#ffffff";
+                    dayBColor="#057d02";
+                }
             }
+
+            if(gridWeekDayName=="Sun"){
+
+                dayColor="#ffffff";
+                dayBColor="#fc0303";
+            }
+
+            html +="<th style='color:"+dayColor+"; background-color:"+dayBColor+";'>"+gridDateNo+"</th>";
+
+            valor=1;
         }
 
-        if(gridWeekDayName=="Sun"){
+        html +="<th></th><th></th><th></th></tr>";
 
-            dayColor="#ffffff";
-            dayBColor="#fc0303";
-        }
-
-        html +="<th style='color:"+dayColor+"; background-color:"+dayBColor+";'>"+gridDateNo+"</th>";
-
-        valor=1;
     }
-
-    html +="<th></th><th></th><th></th></tr>";
 
     //Week Days
+    weekDays();
 
-    date1= new Date(ini); 
-    date2= new Date(end);
+    function weekDays(){
 
-    valor=0;
+        date1= new Date(ini); 
+        date2= new Date(end);
 
-    html+= "<tr><td>DUTIES (in Hours)</td>";
+        valor=0;
 
-    for (let i=0; i<= days_difference; i++){
+        let dayBColor="#e0e0e0";
 
-        let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateNo= formatoFecha(gridDate,5);
-        let gridWeekDayName= formatoFecha(gridDate,6);
-        let gridDateF= formatoFecha(gridDate,1);
-        
-        let dayColor="#000";
-        let dayBColor="#ffffff";
+        html+= "<tr style='background-color:"+dayBColor+";'><td>DUTIES (in Hours)</td>";
 
-        for(x in BHArray){
+        for (let i=0; i<= days_difference; i++){
 
-            if(gridDateF== BHArray[x].datebh){
-                
-                dayColor="#057d02";
-                //dayBColor="#057d02";
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateNo= formatoFecha(gridDate,5);
+            let gridWeekDayName= formatoFecha(gridDate,6);
+            let gridDateF= formatoFecha(gridDate,1);
+            
+            let dayColor="#000";
+            let dayBColor="#ffffff";
+
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    dayColor="#057d02";
+                    //dayBColor="#057d02";
+                }
             }
+
+            if(gridWeekDayName=="Sun"){
+
+                dayColor="#fc0303";
+            }
+
+            html +="<td tipo=0 style='color:"+dayColor+";'>"+gridWeekDayName+"</td>";
+            valor=1;
         }
 
-        if(gridWeekDayName=="Sun"){
-
-            dayColor="#fc0303";
-        }
-
-        html +="<td tipo=0 style='color:"+dayColor+"; background-color:"+dayBColor+";'>"+gridWeekDayName+"</td>";
-        valor=1;
+        html +="<td></td><td></td><td></td></tr>";
     }
-
-    html +="<td></td><td></td><td></td></tr>";
 
     //Normal Hrs
 
-    date1= new Date(ini); 
-    date2= new Date(end);
+    normalHRS();
 
-    valor=0;
-    totalNormalHRS= 0;
+    function normalHRS(){
 
-    html+= "<tr><td>Normal</td>";
+        date1= new Date(ini); 
+        date2= new Date(end);
 
-    for (let i=0; i<= days_difference; i++){
+        valor=0;
+        totalNormalHRS= 0;
 
-        let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateF= formatoFecha(gridDate,1);
-        //let gridDateNo= formatoFecha(gridDate,5);
-        //let gridWeekDayName= formatoFecha(gridDate,6);
-        let dato="";
-        let formHRS=0;
-        let idForm=0;
-        let formPType=1;
-        let isBH=0;
+        html+= "<tr><td>Normal</td>";
 
-        for(x in BHArray){
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
 
-            if(gridDateF== BHArray[x].datebh){
-                
-                isBH=1;
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
             }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Normal"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal"){
+
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    dato= diff;
+                    totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
         }
 
-        for(x in empHoursArray){
+        html +="<td id='totalNormalHRS'>"+totalNormalHRS+"</td><td></td><td></td></tr>";
 
-            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==1){
-
-                idForm= empHoursArray[x].idForm;
-                formHRS= empHoursArray[x].formHRS;
-                dato= empHoursArray[x].formHRS;
-                totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
-            }
-        }
-
-        html +="<td tipo=1 formLabDate="+gridDateF+
-        " idForm="+idForm+
-        " formPType="+formPType+
-        " formHRS="+formHRS+
-        " isBH="+isBH+
-        ">"+dato+"</td>";
-        valor=1;
     }
-
-    html +="<td id='totalNormalHRS'>"+totalNormalHRS+"</td><td></td><td></td></tr>";
 
     //Extra Hrs
 
-    date1= new Date(ini); 
-    date2= new Date(end);
+    extraHRS();
 
-    valor=0;
+    function extraHRS(){
 
-    html+= "<tr><td>Extra</td>";
+        date1= new Date(ini); 
+        date2= new Date(end);
 
-    for (let i=0; i<= days_difference; i++){
+        valor=0;
+        totalExtraHRS= 0;
 
-        let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateF= formatoFecha(gridDate,1);
-        //let gridDateNo= formatoFecha(gridDate,5);
-        //let gridWeekDayName= formatoFecha(gridDate,6);
-        let dato="";
-        let formHRS=0;
-        let idForm=0;
-        let formPType=2;
-        let isBH=0;
+        html+= "<tr><td>Extra</td>";
 
-        for(x in BHArray){
+        let acumuladorHRS=[];
 
-            if(gridDateF== BHArray[x].datebh){
+        console.log(acumuladorHRS);
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra"){
+
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalExtraHRS=totalExtraHRS + parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+                        
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+                }
+
                 
-                isBH=1;
             }
+
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
         }
 
-        for(x in empHoursArray){
+        html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
 
-            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==2){
-
-                idForm= empHoursArray[x].idForm;
-                formHRS= empHoursArray[x].formHRS;
-                dato= empHoursArray[x].formHRS;
-                totalExtraHRS=totalExtraHRS+ parseFloat(formHRS);
-            }
-        }
-
-        html +="<td tipo=1 formLabDate="+gridDateF+
-        " idForm="+idForm+
-        " formPType="+formPType+
-        " formHRS="+formHRS+
-        " isBH="+isBH+
-        ">"+dato+"</td>";
-        valor=1;
     }
 
-    html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
-    html +="<tr><td>OVERTIME</td></tr>";
+    //Overtime header
+    overtimeHeader();
 
-    //FRs
+    function overtimeHeader(){
 
-    //Extra Hrs
+        date1= new Date(ini); 
+        date2= new Date(end);
 
-    date1= new Date(ini); 
-    date2= new Date(end);
+        valor=0;
 
-    valor=0;
+        let dayBColor="#e0e0e0";
 
-    html+= "<tr><td>Extra</td>";
+        html+= "<tr style='background-color:"+dayBColor+";'><td>OVERTIME</td>";
 
-    for (let i=0; i<= days_difference; i++){
+        for (let i=0; i<= days_difference; i++){
 
-        let gridDate= date1.setDate(date1.getDate()+valor);
-        let gridDateF= formatoFecha(gridDate,1);
-        //let gridDateNo= formatoFecha(gridDate,5);
-        //let gridWeekDayName= formatoFecha(gridDate,6);
-        let dato="";
-        let formHRS=0;
-        let idForm=0;
-        let formPType=2;
-        let isBH=0;
-
-        for(x in BHArray){
-
-            if(gridDateF== BHArray[x].datebh){
-                
-                isBH=1;
-            }
+            html +="<td tipo=0></td>";
+            valor=1;
         }
 
-        for(x in empHoursArray){
-
-            if(gridDateF== empHoursArray[x].formLabDate && empHoursArray[x].formPType==2){
-
-                idForm= empHoursArray[x].idForm;
-                formHRS= empHoursArray[x].formHRS;
-                dato= empHoursArray[x].formHRS;
-                totalExtraHRS=totalExtraHRS+ parseFloat(formHRS);
-            }
-        }
-
-        html +="<td tipo=1 formLabDate="+gridDateF+
-        " idForm="+idForm+
-        " formPType="+formPType+
-        " formHRS="+formHRS+
-        " isBH="+isBH+
-        ">"+dato+"</td>";
-        valor=1;
+        html +="<td>Total</td><td>Rate</td><td>G.Total</td></tr>";
     }
 
-    html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
-    html +="<tr><td>OVERTIME</td></tr>";
+    //FR Hrs
+
+    FRHRS();
+
+    function FRHRS(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalExtraHRSFR= 0;
+
+        html+= "<tr><td>FR</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR"){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    dato= diff;
+                    totalExtraHRSFR=totalExtraHRSFR+parseFloat(formHRS);
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
+
+    }
+
+    //OT time and a half Hrs
+
+    OTTHHRS();
+
+    function OTTHHRS(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalExtraHRSFR= 0;
+
+        html+= "<tr><td>@ 1½</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    dato= diff;
+                    totalExtraHRSFR=totalExtraHRSFR+parseFloat(formHRS);
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
+
+    }
 
     hoursTable.innerHTML= html;
+
+    // let myElement= document.querySelectorAll('[tipo="1"]');
+
+    //     for(x in myElement){
+    //         console.log(myElement[x])
+    //     }
 }
 
 document.addEventListener('click', function(e) {
 
     if(e.target.tagName=="TD" && e.target.getAttribute("tipo")==1){
-        var formLabDate = e.target.getAttribute("formLabDate");
+        var formLabDateStart = e.target.getAttribute("formLabDateStart");
         var idForm = e.target.getAttribute("idForm");
-        var formPType = e.target.getAttribute("formPType");
+        var formRefServ = e.target.getAttribute("formRefServ");
         var formHRS = e.target.getAttribute("formHRS");
         var isBH = e.target.getAttribute("isBH");
-        alert(formLabDate +" idForm: "+idForm+" formPType: "+formPType +" formHRS: "+formHRS +" isBH: "+isBH);
+        alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH);
     }
     
 });

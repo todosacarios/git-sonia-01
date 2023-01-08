@@ -1,5 +1,5 @@
 //Variables generales
-var requiredHeaders=['empCode', 'empName', 'contractDate', 'pType', 'HRS', 'labDate'];
+var requiredHeaders=['empCode', 'empName', 'contractDate', 'contractHrs', 'refServ', 'labDateStart', 'labDateFinish'];
 var CSVData="";
 var listExistingFormsArray="";
 var errorsFoundInCSV="";
@@ -120,8 +120,11 @@ async function csvToArray(){
 		// y que sus encabezados son correctos
 		CSVData=csvToArrayResult.message;
 		let checkFile= await checkFileHeaders();
+		console.log(checkFile)
 		if(checkFile>0){
 			document.getElementById("CSVDataTable").innerHTML=errorsFoundInCSV;
+			document.getElementById("CSVDataTable").style.color="#f70505";
+			document.getElementById("CSVDataDiv").style.display="grid";
 			return;
 		} 
 		showDataOnScreen();
@@ -184,7 +187,7 @@ async function checkFileHeaders(){
 	let headersNotFound=0;
 	errorsFoundInCSV="<div> Headers not found: </br>";
 
-	for(let i=1; i < requiredHeaders.length; i++){
+	for(let i=0; i < requiredHeaders.length; i++){
 
 		if(requiredHeaders[i] in CSVData[0]==false){
 			headersNotFound++;
@@ -232,17 +235,17 @@ function extraeFecha(modo){
 
 	let fechaEncontrada=0;
 
-	if('labDate' in CSVData[0]){
+	if('labDateStart' in CSVData[0]){
 
-		fechaEncontrada=CSVData[0].labDate;
+		fechaEncontrada=CSVData[0].labDateStart;
 
 		if(modo==1){
 
 			for(x in CSVData){
 
-				if(CSVData[x].labDate < fechaEncontrada){
+				if(CSVData[x].labDateStart < fechaEncontrada){
 
-					fechaEncontrada= CSVData[x].labDate;
+					fechaEncontrada= CSVData[x].labDateStart;
 					
 				}
 			}
@@ -251,9 +254,9 @@ function extraeFecha(modo){
 
 			for(x in CSVData){
 
-				if(CSVData[x].labDate > fechaEncontrada){
+				if(CSVData[x].labDateStart > fechaEncontrada){
 
-					fechaEncontrada=CSVData[x].labDate;
+					fechaEncontrada=CSVData[x].labDateStart;
 					
 				}
 			}
@@ -493,21 +496,21 @@ function paintTableOfForms(){
 //Captura los datos del listado para abrir detalle
 document.getElementById("tableOfPrevForms").addEventListener("mouseover",abrirDetalle);
 
-	function abrirDetalle(){
+function abrirDetalle(){
 
-		var table=document.getElementById("tableOfPrevForms");
+	var table=document.getElementById("tableOfPrevForms");
 
-			for(var i = 0; i < table.rows.length; i++){
-				table.rows[i].onclick = function(){
+		for(var i = 0; i < table.rows.length; i++){
+			table.rows[i].onclick = function(){
 
-					let titulo=this.cells[1].innerText;
-					let ini=this.cells[2].innerText;
-					let end=this.cells[3].innerText;
+				let titulo=this.cells[1].innerText;
+				let ini=this.cells[2].innerText;
+				let end=this.cells[3].innerText;
 
-					window.location.href = "index.php?op=hoursForm.php&form="+titulo+"&ini="+ini+"&end="+end;
-				};
+				window.location.href = "index.php?op=hoursForm.php&form="+titulo+"&ini="+ini+"&end="+end;
 			};
-	};
+		};
+};
 
 
 

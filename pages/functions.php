@@ -51,6 +51,10 @@ switch ($act) {
         BHData();
         break;
 
+    case 10:
+        servsData();
+        break;
+
     default:
         
 }
@@ -147,12 +151,12 @@ function sendDataTotblap_forms(){
         $empName= $item['empName'];
         $contractHrs= $item['contractHrs'];
         $contractDate= $item['contractDate'];
-        $labDate= $item['labDate'];
-        $pType= $item['pType'];
-        $HRS= $item['HRS'];
+        $labDateStart= $item['labDateStart'];
+        $labDateFinish= $item['labDateFinish'];
+        $refServ= $item['refServ'];
 
-        $sql="INSERT INTO tblap_forms (formDate, formTitle, formStart, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate, formLabDate, formPType, formHRS)
-        VALUES ('$toDay', '$payRollName', '$payFrom', '$payTo', $empCode, '$empName','',0,'$contractHrs', '$contractDate',0, '$labDate', $pType, $HRS )";
+        $sql="INSERT INTO tblap_forms (formDate, formTitle, formStart, formEnd, formEmpCode, formEmpName, formGrade, formSalary, formCHrs, formContractDate, formHourlyRate, formLabDateStart, formLabDateFinish, formRefServ)
+        VALUES ('$toDay', '$payRollName', '$payFrom', '$payTo', $empCode, '$empName','',0,'$contractHrs', '$contractDate',0, '$labDateStart', '$labDateFinish', $refServ )";
 
         if($connection->query($sql)===TRUE){
 
@@ -336,6 +340,36 @@ function BHData(){
 	if(mysqli_num_rows($sql)==0){
 
 		echo json_encode(array(array("idbh"=>0, "message"=>"No results")));
+
+	}else{
+
+		$salida=array();
+
+		while($resultado=mysqli_fetch_object($sql)){
+
+			array_push($salida,$resultado);
+
+		}
+
+		echo json_encode($salida);
+    }
+
+	$connection->close();  
+
+}
+
+function servsData(){
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+	require_once("../connection.php");
+
+	$sql=mysqli_query($connection,"SELECT * FROM tblap_services");
+
+
+	if(mysqli_num_rows($sql)==0){
+
+		echo json_encode(array(array("idServ"=>0, "message"=>"No results")));
 
 	}else{
 
