@@ -10,6 +10,7 @@ let totalNormalHRS=0;
 let totalExtraHRS=0;
 let totalExtraHRSFR=0;
 let totalExtraHRSTH=0;
+let hourlyRate= 0;
 
 window.addEventListener("load", inicio);
 
@@ -32,6 +33,7 @@ async function inicio(){
     document.getElementById("formCHrs").value= empHoursArray[0].formCHrs;
     document.getElementById("formEmpCode").value= empHoursArray[0].formEmpCode;
     document.getElementById("formHourlyRate").value= empHoursArray[0].formHourlyRate;
+    hourlyRate= empHoursArray[0].formHourlyRate;
 
     fillHoursTable();
 }
@@ -551,7 +553,14 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
+
+        let totalAmountFR=  hourlyRate;
+        let gTotalAmountFR= totalAmountFR * totalExtraHRSFR;
+
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+
+        "</td><td id='totalAmountFR'>"+totalAmountFR+
+        "</td><td id='gTotalAmountFR'>"+gTotalAmountFR+"</td></tr>";
 
     }
 
@@ -595,6 +604,9 @@ function fillHoursTable(){
                 }
             }
 
+            //es domingo??
+            let isSunday=formatoFecha(gridDate,2)
+
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
@@ -614,7 +626,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
 
                     //Cálculo de horas
                     let dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -649,7 +661,12 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSTH+"</td><td></td><td></td></tr>";
+        let totalAmountTH= 1.5 * hourlyRate;
+        let gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
+
+        html +="<td id='totalExtraHRSTH'>"+totalExtraHRSTH+
+        "</td><td id='totalAmountTH'>"+totalAmountTH+
+        "</td><td id='gTotalAmountTH'>"+gTotalAmountTH+"</td></tr>";
 
     }
 
@@ -693,6 +710,9 @@ function fillHoursTable(){
                 }
             }
 
+            //es domingo??
+            let isSunday=formatoFecha(gridDate,2)
+
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
@@ -735,6 +755,31 @@ function fillHoursTable(){
                     dato=formHRS;
 
                     acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0){
+
+                     //Cálculo de horas
+                     let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                     let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+ 
+                     idForm= empHoursArray[x].idForm;
+                     formHRS= diff;
+                     //dato= diff;
+                     totalExtraHRSDT=totalExtraHRSDT+parseFloat(formHRS);
+ 
+                     let acumulado=0;
+ 
+                     if(acumuladorHRS[gridDateF]){
+ 
+                         acumulado = acumuladorHRS[gridDateF];
+                     }
+ 
+                     formHRS= formHRS + acumulado
+                     dato=formHRS;
+ 
+                     acumuladorHRS[gridDateF]= formHRS;
+
                 }
             }
 
@@ -747,7 +792,14 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountDT= 2 * hourlyRate;
+        let gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
+
+        html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT+
+        "</td><td id='totalAmountDT'>"+totalAmountDT+
+        "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
 
     }
 
