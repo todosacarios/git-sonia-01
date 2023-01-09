@@ -9,6 +9,7 @@ let servsArray=[];
 let totalNormalHRS=0;
 let totalExtraHRS=0;
 let totalExtraHRSFR=0;
+let totalExtraHRSTH=0;
 
 window.addEventListener("load", inicio);
 
@@ -252,6 +253,8 @@ function fillHoursTable(){
         valor=0;
         totalNormalHRS= 0;
 
+        let acumuladorHRS=[];
+
         html+= "<tr><td>Normal</td>";
 
         //vamos dia por dia
@@ -302,8 +305,20 @@ function fillHoursTable(){
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     idForm= empHoursArray[x].idForm;
                     formHRS= diff;
-                    dato= diff;
+                    //dato= diff;
                     totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
                 }
             }
 
@@ -336,7 +351,7 @@ function fillHoursTable(){
 
         let acumuladorHRS=[];
 
-        console.log(acumuladorHRS);
+        //console.log(acumuladorHRS);
 
         //vamos dia por dia
         for (let i=0; i<= days_difference; i++){
@@ -395,11 +410,11 @@ function fillHoursTable(){
 
                         acumulado = acumuladorHRS[gridDateF];
                     }
-                        
-                    acumuladorHRS[gridDateF]= formHRS;
 
                     formHRS= formHRS + acumulado
                     dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
                 }
 
                 
@@ -453,6 +468,8 @@ function fillHoursTable(){
 
         valor=0;
         totalExtraHRSFR= 0;
+
+        let acumuladorHRS=[];
 
         html+= "<tr><td>FR</td>";
 
@@ -508,8 +525,20 @@ function fillHoursTable(){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= diff;
-                    dato= diff;
+                    //dato= diff;
                     totalExtraHRSFR=totalExtraHRSFR+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
                 }
             }
 
@@ -536,7 +565,9 @@ function fillHoursTable(){
         date2= new Date(end);
 
         valor=0;
-        totalExtraHRSFR= 0;
+        totalExtraHRSTH= 0;
+
+        let acumuladorHRS=[];
 
         html+= "<tr><td>@ 1½</td>";
 
@@ -592,8 +623,20 @@ function fillHoursTable(){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= diff;
-                    dato= diff;
-                    totalExtraHRSFR=totalExtraHRSFR+parseFloat(formHRS);
+                    //dato= diff;
+                    totalExtraHRSTH=totalExtraHRSTH+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
                 }
             }
 
@@ -606,7 +649,105 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSTH+"</td><td></td><td></td></tr>";
+
+    }
+
+    //OT double
+
+    OTDTHRS();
+
+    function OTDTHRS(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalExtraHRSDT= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>@ 2</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalExtraHRSDT=totalExtraHRSDT+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
     }
 
