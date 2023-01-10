@@ -6,6 +6,7 @@ let empCode="";
 let empHoursArray=[];
 let BHArray=[];
 let servsArray=[];
+let hourlyRatesArray=[];
 let totalNormalHRS=0;
 let totalExtraHRS=0;
 let totalExtraHRSFR=0;
@@ -24,18 +25,51 @@ async function inicio(){
     BHArray= await BHData();
     empHoursArray= await empHours();
     servsArray= await servsData();
+    hourlyRatesArray= await hourlyRatesData();
 
-    //console.log(BHArray)
+    //console.log(hourlyRatesArray)
     
     document.getElementById("formEmpName").value= empHoursArray[0].formEmpName;
     document.getElementById("formGrade").value= empHoursArray[0].formGrade;
     document.getElementById("formSalary").value= empHoursArray[0].formSalary;
     document.getElementById("formCHrs").value= empHoursArray[0].formCHrs;
     document.getElementById("formEmpCode").value= empHoursArray[0].formEmpCode;
-    document.getElementById("formHourlyRate").value= empHoursArray[0].formHourlyRate;
-    hourlyRate= empHoursArray[0].formHourlyRate;
+
+    //Si aun no tiene asignado un precio hora, se le busca el que le corresponde 
+    let contractDate= empHoursArray[0].formContractDate;
+
+    //cuanto lleva contratado
+    if(empHoursArray[0].formHourlyRate==0){
+
+        let d1= new Date(contractDate);
+        let d2= new Date(end);
+        let noMonths= monthDiff(d1,d2);
+        //console.log(noMonths);
+
+        for(x in hourlyRatesArray){
+
+            if(noMonths >= hourlyRatesArray[x].hrMonths){
+
+                hourlyRate= hourlyRatesArray[x].hrAmount;
+            }     
+        }
+
+    }else{
+
+        hourlyRate= empHoursArray[0].formHourlyRate;
+    }
+
+    document.getElementById("formHourlyRate").value= hourlyRate;
 
     fillHoursTable();
+}
+
+function monthDiff(d1, d2) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
 }
 
 async function BHData(){
@@ -134,6 +168,38 @@ async function servsData(){
 	// 	   throw new Error(json_response.message);	
 
 	return return_data;    
+}
+
+async function hourlyRatesData(){
+
+	// formdata
+	let data = new FormData();
+	data.append('act', 11);
+
+	// send fetch along with cookies
+	let response = await fetch('functions.php', {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: data
+	});
+
+	// server responded with http response != 200
+	if(response.status != 200)
+		throw new Error('HTTP response code != 200');
+
+	// read json response from server
+	// success response example : {"error":0,"message":""}
+	// error response example : {"error":1,"message":"File type not allowed"}
+	let json_response = await response.json();
+
+    return_data=json_response;
+
+	// return_data = { error: json_response[0].id, message: json_response[0].message };
+
+	// if(json_response.error == 1)
+	// 	   throw new Error(json_response.message);	
+
+	return return_data;  
 }
 
 function fillHoursTable(){
