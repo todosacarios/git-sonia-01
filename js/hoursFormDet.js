@@ -11,6 +11,7 @@ let totalNormalHRS=0;
 let totalExtraHRS=0;
 let totalExtraHRSFR=0;
 let totalExtraHRSTH=0;
+let totalSat=0;
 let hourlyRate= 0;
 
 window.addEventListener("load", inicio);
@@ -866,6 +867,140 @@ function fillHoursTable(){
         html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT+
         "</td><td id='totalAmountDT'>"+totalAmountDT+
         "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
+
+    }
+
+    //Allowances header
+    allowancesHeader();
+
+    function allowancesHeader(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        let dayBColor="#e0e0e0";
+
+        html+= "<tr style='background-color:"+dayBColor+";'><td>ALLOWANCES</td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td>Total</td><td>Rate</td><td>G.Total</td></tr>";
+    }
+
+
+    //@sat 33%
+
+    sat();
+
+    function sat(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSat= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>Sat @ 33%</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Sabado??
+            let isSaturday=formatoFecha(gridDate,2)
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalSat=totalSat+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountSat= 2 * hourlyRate;
+        let gTotalAmountSat= totalAmountSat * totalSat;
+
+        html +="<td id='totalSat'>"+totalSat+
+        "</td><td id='totalAmountSat'>"+totalAmountSat+
+        "</td><td id='gTotalAmountSat'>"+gTotalAmountSat+"</td></tr>";
 
     }
 
