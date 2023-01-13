@@ -12,6 +12,7 @@ let totalExtraHRS=0;
 let totalExtraHRSFR=0;
 let totalExtraHRSTH=0;
 let totalSat=0;
+let totalSun=0;
 let hourlyRate= 0;
 
 window.addEventListener("load", inicio);
@@ -622,8 +623,10 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
 
-        let totalAmountFR=  hourlyRate;
+        let totalAmountFR= parseFloat(hourlyRate);
+        totalAmountFR= totalAmountFR.toFixed(2);
         let gTotalAmountFR= totalAmountFR * totalExtraHRSFR;
+        gTotalAmountFR= gTotalAmountFR.toFixed(2);
 
         html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+
         "</td><td id='totalAmountFR'>"+totalAmountFR+
@@ -729,7 +732,9 @@ function fillHoursTable(){
         }
 
         let totalAmountTH= 1.5 * hourlyRate;
+        totalAmountTH= totalAmountTH.toFixed(2);
         let gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
+        gTotalAmountTH= gTotalAmountTH.toFixed(2);
 
         html +="<td id='totalExtraHRSTH'>"+totalExtraHRSTH+
         "</td><td id='totalAmountTH'>"+totalAmountTH+
@@ -862,7 +867,9 @@ function fillHoursTable(){
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
         let totalAmountDT= 2 * hourlyRate;
+        totalAmountDT= totalAmountDT.toFixed(2);
         let gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
+        gTotalAmountDT= gTotalAmountDT.toFixed(2);
 
         html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT+
         "</td><td id='totalAmountDT'>"+totalAmountDT+
@@ -894,7 +901,7 @@ function fillHoursTable(){
     }
 
 
-    //@sat 33%
+    //@Sat 33%
 
     sat();
 
@@ -956,7 +963,32 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalSat=totalSat+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6){
 
                     //Cálculo de horas
                     let dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -995,8 +1027,10 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSat= 2 * hourlyRate;
+        let totalAmountSat= 1.33 * hourlyRate;
+        totalAmountSat= totalAmountSat.toFixed(2);
         let gTotalAmountSat= totalAmountSat * totalSat;
+        gTotalAmountSat= gTotalAmountSat.toFixed(2);
 
         html +="<td id='totalSat'>"+totalSat+
         "</td><td id='totalAmountSat'>"+totalAmountSat+
@@ -1004,8 +1038,146 @@ function fillHoursTable(){
 
     }
 
+    //@Sun 33%
+
+    sun();
+
+    function sun(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSat= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>Sun @ 66%</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Domingo??
+            let isSunday=formatoFecha(gridDate,2)
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalSun=totalSun+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0){
+
+                    //Cálculo de horas
+                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= diff;
+                    //dato= diff;
+                    totalSat=totalSat+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountSun= 1.66 * hourlyRate;
+        totalAmountSun= totalAmountSun.toFixed(2);
+        let gTotalAmountSun= totalAmountSun * totalSun;
+        gTotalAmountSun= gTotalAmountSun.toFixed(2);
+
+        html +="<td id='totalSun'>"+totalSun+
+        "</td><td id='totalAmountSun'>"+totalAmountSun+
+        "</td><td id='gTotalAmountSun'>"+gTotalAmountSun+"</td></tr>";
+
+    }
+
     hoursTable.innerHTML= html;
 
+    //window.print();
     // let myElement= document.querySelectorAll('[tipo="1"]');
 
     //     for(x in myElement){
