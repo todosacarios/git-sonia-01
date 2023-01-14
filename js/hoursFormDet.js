@@ -13,6 +13,7 @@ let totalExtraHRSFR=0;
 let totalExtraHRSTH=0;
 let totalSat=0;
 let totalSun=0;
+let totalNR=0;
 let hourlyRate= 0;
 
 window.addEventListener("load", inicio);
@@ -340,6 +341,8 @@ function fillHoursTable(){
             let formRefServ=1;
             let isBH=0;
             let payTypeServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -370,9 +373,14 @@ function fillHoursTable(){
 
                 if(gridDateF== formLabDateStartF && payTypeServ=="Normal"){
 
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
                     idForm= empHoursArray[x].idForm;
                     formHRS= diff;
                     //dato= diff;
@@ -397,6 +405,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -436,6 +446,8 @@ function fillHoursTable(){
             let formRefServ=1;
             let isBH=0;
             let payTypeServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -466,9 +478,14 @@ function fillHoursTable(){
 
                 if(gridDateF== formLabDateStartF && payTypeServ=="Extra"){
 
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
                     idForm= empHoursArray[x].idForm;
                     formHRS= diff;
                     //dato= diff;
@@ -496,6 +513,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -557,6 +576,8 @@ function fillHoursTable(){
             let isBH=0;
             let payTypeServ="";
             let catServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -589,8 +610,12 @@ function fillHoursTable(){
                 if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR"){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -617,6 +642,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -664,6 +691,8 @@ function fillHoursTable(){
             let isBH=0;
             let payTypeServ="";
             let catServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -699,8 +728,12 @@ function fillHoursTable(){
                 if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+                    
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -727,6 +760,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -772,6 +807,8 @@ function fillHoursTable(){
             let isBH=0;
             let payTypeServ="";
             let catServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -807,8 +844,12 @@ function fillHoursTable(){
                 if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -831,8 +872,12 @@ function fillHoursTable(){
                 }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0){
 
                      //Cálculo de horas
-                     let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                     let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                     dateStart= new Date(empHoursArray[x].formLabDateStart);
+                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                     startHour= dateStart.getHours();
+                     finishHour= dateFinish.getHours();
+
                      var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
  
                      idForm= empHoursArray[x].idForm;
@@ -860,6 +905,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -931,6 +978,8 @@ function fillHoursTable(){
             let isBH=0;
             let payTypeServ="";
             let catServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -966,8 +1015,12 @@ function fillHoursTable(){
                 if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -991,8 +1044,12 @@ function fillHoursTable(){
                 }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -1021,6 +1078,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1038,7 +1097,7 @@ function fillHoursTable(){
 
     }
 
-    //@Sun 33%
+    //@Sun 66%
 
     sun();
 
@@ -1068,6 +1127,8 @@ function fillHoursTable(){
             let isBH=0;
             let payTypeServ="";
             let catServ="";
+            let dateStart="";
+            let dateFinish="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1103,8 +1164,12 @@ function fillHoursTable(){
                 if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -1128,8 +1193,12 @@ function fillHoursTable(){
                 }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0){
 
                     //Cálculo de horas
-                    let dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    let dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                    dateStart= new Date(empHoursArray[x].formLabDateStart);
+                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                    startHour= dateStart.getHours();
+                    finishHour= dateFinish.getHours();
+
                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                     idForm= empHoursArray[x].idForm;
@@ -1158,6 +1227,8 @@ function fillHoursTable(){
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1172,6 +1243,154 @@ function fillHoursTable(){
         html +="<td id='totalSun'>"+totalSun+
         "</td><td id='totalAmountSun'>"+totalAmountSun+
         "</td><td id='gTotalAmountSun'>"+gTotalAmountSun+"</td></tr>";
+
+    }
+
+    //@SNR 33%
+
+    nr();
+
+    function nr(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSat= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>NR @ 33%</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+            let dateStart="";
+            let dateFinish="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Domingo??
+            let isSunday=formatoFecha(gridDate,2)
+
+            //es nocturno?
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //Cálculo de horas
+                dateStart= new Date(empHoursArray[x].formLabDateStart);
+                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                startHour= dateStart.getHours();
+                finishHour= dateFinish.getHours();
+
+                console.log(startHour + " - " + finishHour)
+                let NRHours=0;
+
+                if( startHour > 8){
+                    NRHours= finishHour - startHour
+                }
+
+                //console.log("Service found "+servFound+ " times")
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= NRHours;
+                    //dato= diff;
+                    totalSun=totalSun+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && NRHours>0){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= NRHours;
+                    //dato= diff;
+                    totalSat=totalSat+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    dato=formHRS;
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountNR= 1.66 * hourlyRate;
+        totalAmountNR= totalAmountNR.toFixed(2);
+        let gTotalAmountNR= totalAmountNR * totalNR;
+        gTotalAmountNR= gTotalAmountNR.toFixed(2);
+
+        html +="<td id='totalNR'>"+totalNR+
+        "</td><td id='totalAmountNR'>"+totalAmountNR+
+        "</td><td id='gTotalAmountNR'>"+gTotalAmountNR+"</td></tr>";
 
     }
 
@@ -1193,7 +1412,9 @@ document.addEventListener('click', function(e) {
         var formRefServ = e.target.getAttribute("formRefServ");
         var formHRS = e.target.getAttribute("formHRS");
         var isBH = e.target.getAttribute("isBH");
-        alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH);
+        var startHour = e.target.getAttribute("startHour");
+        var finishHour = e.target.getAttribute("finishHour");
+        alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH+ " startHour: "+ startHour + " finishHour: "+ finishHour);
     }
     
 });
