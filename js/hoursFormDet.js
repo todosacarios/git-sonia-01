@@ -14,7 +14,19 @@ let totalExtraHRSTH=0;
 let totalSat=0;
 let totalSun=0;
 let totalNR=0;
-let hourlyRate= 0;
+let totalSDA=0;
+let totalOTSDA=0;
+let hourlyRate=0;
+
+let gTotalAmountDT=0;
+let gTotalAmountTH=0;
+let gTotalAmountFR=0;
+let gOvertimeTotal=0;
+let gTotalAmountSat=0;
+let gTotalAmountSun=0;
+let gTotalAmountNR=0;
+let gAllowancesTotal=0;
+let gTotalHrs=0;
 
 window.addEventListener("load", inicio);
 
@@ -523,6 +535,32 @@ function fillHoursTable(){
 
     }
 
+    //Duties Totals
+    dutiesTotals();
+
+    function dutiesTotals(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        let dayBColor="#e0e0e0";
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        gTotalHrs= parseFloat(totalNormalHRS) + parseFloat(totalExtraHRS);
+        gTotalHrs= gTotalHrs.toFixed(2); 
+
+        html +="<td class='boldStyle orangeBG' id='gTotalHrs'>"+gTotalHrs+"</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG'></td></tr>";
+    }
+
     //Overtime header
     overtimeHeader();
 
@@ -543,7 +581,7 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td>Total</td><td>Rate</td><td>G.Total</td></tr>";
+        html +="<td>Hrs</td><td>Rate</td><td>G.Total</td></tr>";
     }
 
     //FR Hrs
@@ -652,7 +690,7 @@ function fillHoursTable(){
 
         let totalAmountFR= parseFloat(hourlyRate);
         totalAmountFR= totalAmountFR.toFixed(2);
-        let gTotalAmountFR= totalAmountFR * totalExtraHRSFR;
+        gTotalAmountFR= totalAmountFR * totalExtraHRSFR;
         gTotalAmountFR= gTotalAmountFR.toFixed(2);
 
         html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+
@@ -768,7 +806,7 @@ function fillHoursTable(){
 
         let totalAmountTH= 1.5 * hourlyRate;
         totalAmountTH= totalAmountTH.toFixed(2);
-        let gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
+        gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
         gTotalAmountTH= gTotalAmountTH.toFixed(2);
 
         html +="<td id='totalExtraHRSTH'>"+totalExtraHRSTH+
@@ -915,13 +953,40 @@ function fillHoursTable(){
 
         let totalAmountDT= 2 * hourlyRate;
         totalAmountDT= totalAmountDT.toFixed(2);
-        let gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
+        gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
         gTotalAmountDT= gTotalAmountDT.toFixed(2);
 
         html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT+
         "</td><td id='totalAmountDT'>"+totalAmountDT+
         "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
 
+    }
+
+    //Overtime Total
+    overtimeTotal();
+
+    function overtimeTotal(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        let dayBColor="#e0e0e0";
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+
+        gOvertimeTotal= parseFloat(gTotalAmountFR) + parseFloat(gTotalAmountTH) + parseFloat(gTotalAmountDT);
+        gOvertimeTotal= gOvertimeTotal.toFixed(2);
+
+        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gOvertimeTotal'>"+gOvertimeTotal+"</td></tr>";
     }
 
     //Allowances header
@@ -944,7 +1009,7 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td>Total</td><td>Rate</td><td>G.Total</td></tr>";
+        html +="<td>Hrs</td><td>Rate</td><td>G.Total</td></tr>";
     }
 
 
@@ -1088,7 +1153,7 @@ function fillHoursTable(){
 
         let totalAmountSat= 1.33 * hourlyRate;
         totalAmountSat= totalAmountSat.toFixed(2);
-        let gTotalAmountSat= totalAmountSat * totalSat;
+        gTotalAmountSat= totalAmountSat * totalSat;
         gTotalAmountSat= gTotalAmountSat.toFixed(2);
 
         html +="<td id='totalSat'>"+totalSat+
@@ -1237,7 +1302,7 @@ function fillHoursTable(){
 
         let totalAmountSun= 1.66 * hourlyRate;
         totalAmountSun= totalAmountSun.toFixed(2);
-        let gTotalAmountSun= totalAmountSun * totalSun;
+        gTotalAmountSun= totalAmountSun * totalSun;
         gTotalAmountSun= gTotalAmountSun.toFixed(2);
 
         html +="<td id='totalSun'>"+totalSun+
@@ -1318,11 +1383,46 @@ function fillHoursTable(){
                 startHour= dateStart.getHours();
                 finishHour= dateFinish.getHours();
 
-                console.log(startHour + " - " + finishHour)
+                //Contamos las horas nocturnas (de 20h a 8h)
+
                 let NRHours=0;
 
-                if( startHour > 8){
-                    NRHours= finishHour - startHour
+                // if( finishHour > 20){
+                //     NRHours= finishHour - 20
+                // }
+
+                // if( startHour < 8){
+                //     NRHours= 8 - startHour;
+                // }
+
+                if( startHour >= 20 && finishHour <= 23){
+
+                    pasa=" startHour >= 20 && finishHour > 0"
+
+                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour < 20 && finishHour <= 23){
+
+                    pasa =" startHour < 20 && finishHour > 23"
+
+                    dateStart.setHours(20);
+                    dateStart.setMinutes(0);
+
+                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour > 0 && finishHour <= 8){
+
+                    pasa= " startHour > 0 && finishHour <= 8)"
+
+                    dateFinish.setHours(8);
+                    dateFinish.setMinutes(0);
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
                 }
 
                 //console.log("Service found "+servFound+ " times")
@@ -1332,7 +1432,7 @@ function fillHoursTable(){
                     idForm= empHoursArray[x].idForm;
                     formHRS= NRHours;
                     //dato= diff;
-                    totalSun=totalSun+parseFloat(formHRS);
+                    totalNR=totalNR+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1343,7 +1443,8 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
@@ -1352,7 +1453,7 @@ function fillHoursTable(){
                     idForm= empHoursArray[x].idForm;
                     formHRS= NRHours;
                     //dato= diff;
-                    totalSat=totalSat+parseFloat(formHRS);
+                    totalNR=totalNR+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1363,7 +1464,8 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
@@ -1383,25 +1485,406 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountNR= 1.66 * hourlyRate;
+        let totalAmountNR= 1.33 * hourlyRate;
         totalAmountNR= totalAmountNR.toFixed(2);
-        let gTotalAmountNR= totalAmountNR * totalNR;
+        gTotalAmountNR= totalAmountNR * totalNR;
         gTotalAmountNR= gTotalAmountNR.toFixed(2);
 
-        html +="<td id='totalNR'>"+totalNR+
+        html +="<td id='totalNR'>"+totalNR.toFixed(2)+
         "</td><td id='totalAmountNR'>"+totalAmountNR+
         "</td><td id='gTotalAmountNR'>"+gTotalAmountNR+"</td></tr>";
 
     }
 
+    //Overtime Total
+    allowancesTotal();
+
+    function allowancesTotal(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        let dayBColor="#e0e0e0";
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+
+        gAllowancesTotal= parseFloat(gTotalAmountSat) + parseFloat(gTotalAmountSun) + parseFloat(gTotalAmountNR);
+        gAllowancesTotal= gAllowancesTotal.toFixed(2);
+
+        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gOvertimeTotal'>"+gAllowancesTotal+"</td></tr>";
+    }
+
+    //@SDA 5%
+
+    sda();
+
+    function sda(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSat= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>SDA @ 5%</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+            let dateStart="";
+            let dateFinish="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Domingo??
+            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+
+            let isWeekEnd= 0;
+
+            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+
+                isWeekEnd= 1;
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //Cálculo de horas
+                dateStart= new Date(empHoursArray[x].formLabDateStart);
+                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                startHour= dateStart.getHours();
+                finishHour= dateFinish.getHours();
+
+                //Contamos las horas nocturnas (de 20h a 8h)
+
+                let SDAHours=0;
+                let pasa="";
+
+                if( startHour >= 8 && finishHour <= 20){
+
+                    pasa=" startHour >= 8 && finishHour > 20"
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour >= 8 && finishHour > 20){
+
+                    pasa =" startHour >= 8 && finishHour > 20"
+
+                    dateFinish.setHours(20);
+                    dateFinish.setMinutes(0);
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour < 8 && finishHour < 20){
+
+                    pasa= " startHour < 8 && finishHour < 20"
+
+                    dateStart.setHours(8);
+                    dateStart.setMinutes(0);
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+
+                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalSDA=totalNR+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==0){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalSDA=totalSDA+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountSDA= 1.33 * hourlyRate;
+        totalAmountSDA= totalAmountSDA.toFixed(2);
+        gTotalAmountSDA= totalAmountSDA * totalSDA;
+        gTotalAmountSDA= gTotalAmountSDA.toFixed(2);
+
+        html +="<td id='totalSDA'>"+totalSDA.toFixed(2)+
+        "</td><td id='totalAmountSDA'>"+totalAmountSDA+
+        "</td><td id='gTotalAmountSDA'>"+gTotalAmountSDA+"</td></tr>";
+
+    }
+
+    //@OT SDA 5%
+
+    otsda();
+
+    function otsda(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSat= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>OT SDA @ 5%</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+            let dateStart="";
+            let dateFinish="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Domingo??
+            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+
+            let isWeekEnd= 0;
+
+            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+
+                isWeekEnd= 1;
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+                //Cálculo de horas
+                dateStart= new Date(empHoursArray[x].formLabDateStart);
+                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                startHour= dateStart.getHours();
+                finishHour= dateFinish.getHours();
+
+                //Contamos las horas nocturnas (de 20h a 8h)
+
+                let SDAHours=0;
+
+                if( startHour >= 8 && finishHour <= 20){
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour >= 8 && finishHour > 20){
+
+                    dateFinish.setHours(20);
+                    dateFinish.setMinutes(0);
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+                if( startHour < 8 && finishHour < 20){
+
+                    dateStart.setHours(8);
+                    dateStart.setMinutes(0);
+
+                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    
+                }
+
+
+                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalOTSDA=totalNR+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+ 
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalOTSDA=totalSDA+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+
+        let totalAmountOTSDA= 1.33 * hourlyRate;
+        totalAmountOTSDA= totalAmountOTSDA.toFixed(2);
+        gTotalAmountOTSDA= totalAmountOTSDA * totalSDA;
+        gTotalAmountOTSDA= gTotalAmountOTSDA.toFixed(2);
+
+        html +="<td id='totalOTSDA'>"+totalOTSDA.toFixed(2)+
+        "</td><td id='totalAmountOTSDA'>"+totalAmountOTSDA+
+        "</td><td id='gTotalAmountOTSDA'>"+gTotalAmountOTSDA+"</td></tr>";
+
+    }
+
+
     hoursTable.innerHTML= html;
 
-    //window.print();
-    // let myElement= document.querySelectorAll('[tipo="1"]');
-
-    //     for(x in myElement){
-    //         console.log(myElement[x])
-    //     }
 }
 
 document.addEventListener('click', function(e) {
