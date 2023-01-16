@@ -1834,7 +1834,49 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isBH==1){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalOTSDA=totalNR+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+ 
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
                 }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= SDAHours;
+                    //dato= diff;
+                    totalOTSDA=totalSDA+parseFloat(formHRS);
+
+                    let acumulado=0;
+
+                    //revisamos si ya habia horas ese dia
+                    if(acumuladorHRS[gridDateF]){
+
+                        acumulado = acumuladorHRS[gridDateF];
+                    }
+
+                    formHRS= formHRS + acumulado
+
+                    dato=formHRS.toFixed(2);
+
+                    acumuladorHRS[gridDateF]= formHRS;
+
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isBH==1){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= SDAHours;
