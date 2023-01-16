@@ -28,6 +28,8 @@ let gTotalAmountNR=0;
 let gAllowancesTotal=0;
 let gTotalHrs=0;
 
+let ignoreBecauseLastMonday=0;
+
 window.addEventListener("load", inicio);
 
 async function inicio(){
@@ -324,6 +326,24 @@ function fillHoursTable(){
         html +="<td></td><td></td><td></td></tr>";
     }
 
+    //Comprobamos que si pertenece al ultimo lunes y ya no entra en la paga
+    function lastMondayCheck(gridDateF, startingAt){
+
+        let response=0;
+
+        let date2F= formatoFecha(date2,1);
+
+        if(gridDateF==date2F){
+
+            let dStart= new Date(startingAt);
+            //Hora a la que empieza el servicio del ultimo lunes
+            let sHour= dStart.getHours();
+            response=sHour;
+        }
+            
+            return response;
+    }
+
     //Normal Hrs
 
     normalHRS();
@@ -355,6 +375,8 @@ function fillHoursTable(){
             let payTypeServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -370,6 +392,10 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
                 //comprobamos si son horas "Normal"
                 let servFound=0;
 
@@ -383,7 +409,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal"){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && ignoreBecauseLastMonday==0){
 
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
@@ -406,7 +432,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
                 }
@@ -423,7 +449,7 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalNormalHRS'>"+totalNormalHRS+"</td><td></td><td></td></tr>";
+        html +="<td id='totalNormalHRS'>"+totalNormalHRS.toFixed(2)+"</td><td></td><td></td></tr>";
 
     }
 
@@ -460,6 +486,8 @@ function fillHoursTable(){
             let payTypeServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -475,6 +503,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -488,7 +521,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra"){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && ignoreBecauseLastMonday==0){
 
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
@@ -511,7 +544,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
                 }
@@ -531,7 +564,7 @@ function fillHoursTable(){
             valor=1;
         }
 
-        html +="<td id='totalExtraHRS'>"+totalExtraHRS+"</td><td></td><td></td></tr>";
+        html +="<td id='totalExtraHRS'>"+totalExtraHRS.toFixed(2)+"</td><td></td><td></td></tr>";
 
     }
 
@@ -616,6 +649,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -631,6 +666,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -645,7 +685,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR"){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -669,7 +709,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
                 }
@@ -693,7 +733,7 @@ function fillHoursTable(){
         gTotalAmountFR= totalAmountFR * totalExtraHRSFR;
         gTotalAmountFR= gTotalAmountFR.toFixed(2);
 
-        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+
+        html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR.toFixed(2)+
         "</td><td id='totalAmountFR'>"+totalAmountFR+
         "</td><td id='gTotalAmountFR'>"+gTotalAmountFR+"</td></tr>";
 
@@ -731,6 +771,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -749,6 +791,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -763,7 +810,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -787,7 +834,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
                 }
@@ -809,7 +856,7 @@ function fillHoursTable(){
         gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
         gTotalAmountTH= gTotalAmountTH.toFixed(2);
 
-        html +="<td id='totalExtraHRSTH'>"+totalExtraHRSTH+
+        html +="<td id='totalExtraHRSTH'>"+totalExtraHRSTH.toFixed(2)+
         "</td><td id='totalAmountTH'>"+totalAmountTH+
         "</td><td id='gTotalAmountTH'>"+gTotalAmountTH+"</td></tr>";
 
@@ -847,6 +894,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -865,6 +914,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -879,7 +933,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -903,11 +957,11 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0 && ignoreBecauseLastMonday==0){
 
                      //Cálculo de horas
                      dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -931,7 +985,7 @@ function fillHoursTable(){
                      }
  
                      formHRS= formHRS + acumulado
-                     dato=formHRS;
+                     dato=formHRS.toFixed(2);
  
                      acumuladorHRS[gridDateF]= formHRS;
 
@@ -956,7 +1010,7 @@ function fillHoursTable(){
         gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
         gTotalAmountDT= gTotalAmountDT.toFixed(2);
 
-        html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT+
+        html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT.toFixed(2)+
         "</td><td id='totalAmountDT'>"+totalAmountDT+
         "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
 
@@ -1045,6 +1099,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1063,6 +1119,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -1077,7 +1138,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -1102,11 +1163,11 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -1131,7 +1192,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
@@ -1151,12 +1212,12 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSat= 1.33 * hourlyRate;
+        let totalAmountSat= 0.33 * hourlyRate;
         totalAmountSat= totalAmountSat.toFixed(2);
         gTotalAmountSat= totalAmountSat * totalSat;
         gTotalAmountSat= gTotalAmountSat.toFixed(2);
 
-        html +="<td id='totalSat'>"+totalSat+
+        html +="<td id='totalSat'>"+totalSat.toFixed(2)+
         "</td><td id='totalAmountSat'>"+totalAmountSat+
         "</td><td id='gTotalAmountSat'>"+gTotalAmountSat+"</td></tr>";
 
@@ -1172,7 +1233,7 @@ function fillHoursTable(){
         date2= new Date(end);
 
         valor=0;
-        totalSat= 0;
+        totalSun= 0;
 
         let acumuladorHRS=[];
 
@@ -1194,6 +1255,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1212,6 +1275,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -1226,7 +1294,7 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -1251,11 +1319,11 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0 && ignoreBecauseLastMonday==0){
 
                     //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
@@ -1280,7 +1348,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    dato=formHRS;
+                    dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
 
@@ -1300,18 +1368,18 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSun= 1.66 * hourlyRate;
+        let totalAmountSun= 0.66 * hourlyRate;
         totalAmountSun= totalAmountSun.toFixed(2);
         gTotalAmountSun= totalAmountSun * totalSun;
         gTotalAmountSun= gTotalAmountSun.toFixed(2);
 
-        html +="<td id='totalSun'>"+totalSun+
+        html +="<td id='totalSun'>"+totalSun.toFixed(2)+
         "</td><td id='totalAmountSun'>"+totalAmountSun+
         "</td><td id='gTotalAmountSun'>"+gTotalAmountSun+"</td></tr>";
 
     }
 
-    //@SNR 33%
+    //@NR 33%
 
     nr();
 
@@ -1343,6 +1411,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1362,6 +1432,11 @@ function fillHoursTable(){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
+
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1394,18 +1469,14 @@ function fillHoursTable(){
                 // if( startHour < 8){
                 //     NRHours= 8 - startHour;
                 // }
-
+                console.log(startHour + " .." + finishHour)
                 if( startHour >= 20 && finishHour <= 23){
-
-                    pasa=" startHour >= 20 && finishHour > 0"
 
                     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
                 }
 
                 if( startHour < 20 && finishHour <= 23){
-
-                    pasa =" startHour < 20 && finishHour > 23"
 
                     dateStart.setHours(20);
                     dateStart.setMinutes(0);
@@ -1414,20 +1485,20 @@ function fillHoursTable(){
                     
                 }
 
-                if( startHour > 0 && finishHour <= 8){
-
-                    pasa= " startHour > 0 && finishHour <= 8)"
+                if( startHour >= 0 && finishHour <= 8){
 
                     dateFinish.setHours(8);
                     dateFinish.setMinutes(0);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                    console.log("si! "+ NRHours)
                     
                 }
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= NRHours;
@@ -1448,7 +1519,7 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && NRHours>0){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && NRHours>0 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= NRHours;
@@ -1485,7 +1556,7 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountNR= 1.33 * hourlyRate;
+        let totalAmountNR= 0.33 * hourlyRate;
         totalAmountNR= totalAmountNR.toFixed(2);
         gTotalAmountNR= totalAmountNR * totalNR;
         gTotalAmountNR= gTotalAmountNR.toFixed(2);
@@ -1533,7 +1604,7 @@ function fillHoursTable(){
         date2= new Date(end);
 
         valor=0;
-        totalSat= 0;
+        totalSDA= 0;
 
         let acumuladorHRS=[];
 
@@ -1555,6 +1626,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1580,6 +1653,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -1602,19 +1680,14 @@ function fillHoursTable(){
                 //Contamos las horas nocturnas (de 20h a 8h)
 
                 let SDAHours=0;
-                let pasa="";
 
                 if( startHour >= 8 && finishHour <= 20){
-
-                    pasa=" startHour >= 8 && finishHour > 20"
 
                     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
                 }
 
                 if( startHour >= 8 && finishHour > 20){
-
-                    pasa =" startHour >= 8 && finishHour > 20"
 
                     dateFinish.setHours(20);
                     dateFinish.setMinutes(0);
@@ -1624,8 +1697,6 @@ function fillHoursTable(){
                 }
 
                 if( startHour < 8 && finishHour < 20){
-
-                    pasa= " startHour < 8 && finishHour < 20"
 
                     dateStart.setHours(8);
                     dateStart.setMinutes(0);
@@ -1637,12 +1708,12 @@ function fillHoursTable(){
 
                 //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= SDAHours;
                     //dato= diff;
-                    totalSDA=totalNR+parseFloat(formHRS);
+                    totalSDA=totalSDA+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1658,7 +1729,7 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==0){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= SDAHours;
@@ -1695,7 +1766,7 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSDA= 1.33 * hourlyRate;
+        let totalAmountSDA= 0.05 * hourlyRate;
         totalAmountSDA= totalAmountSDA.toFixed(2);
         gTotalAmountSDA= totalAmountSDA * totalSDA;
         gTotalAmountSDA= gTotalAmountSDA.toFixed(2);
@@ -1716,7 +1787,7 @@ function fillHoursTable(){
         date2= new Date(end);
 
         valor=0;
-        totalSat= 0;
+        totalOTSDA= 0;
 
         let acumuladorHRS=[];
 
@@ -1738,6 +1809,8 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
+            let startHour="";
+            let finishHour="";
 
             //es bankholiday?
             for(x in BHArray){
@@ -1763,6 +1836,11 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                if(lastMondayToProcess>0){
+                    ignoreBecauseLastMonday=1;
+                }
+
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -1784,11 +1862,11 @@ function fillHoursTable(){
 
                 //Contamos las horas nocturnas (de 20h a 8h)
 
-                let SDAHours=0;
+                let OTSDAHours=0;
 
                 if( startHour >= 8 && finishHour <= 20){
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
                 }
 
@@ -1797,7 +1875,7 @@ function fillHoursTable(){
                     dateFinish.setHours(20);
                     dateFinish.setMinutes(0);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
                 }
 
@@ -1806,19 +1884,19 @@ function fillHoursTable(){
                     dateStart.setHours(8);
                     dateStart.setMinutes(0);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
                 }
 
 
                 //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1 && ignoreBecauseLastMonday==0 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
+                    formHRS= OTSDAHours;
                     //dato= diff;
-                    totalOTSDA=totalNR+parseFloat(formHRS);
+                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1834,12 +1912,12 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isBH==1){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isBH==1 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
+                    formHRS= OTSDAHours;
                     //dato= diff;
-                    totalOTSDA=totalNR+parseFloat(formHRS);
+                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1855,12 +1933,12 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
+                    formHRS= OTSDAHours;
                     //dato= diff;
-                    totalOTSDA=totalSDA+parseFloat(formHRS);
+                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1876,12 +1954,12 @@ function fillHoursTable(){
 
                     acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isBH==1){
+                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isBH==1 && ignoreBecauseLastMonday==0){
 
                     idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
+                    formHRS= OTSDAHours;
                     //dato= diff;
-                    totalOTSDA=totalSDA+parseFloat(formHRS);
+                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
                     let acumulado=0;
 
@@ -1913,7 +1991,7 @@ function fillHoursTable(){
 
         //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountOTSDA= 1.33 * hourlyRate;
+        let totalAmountOTSDA= 0.05 * hourlyRate;
         totalAmountOTSDA= totalAmountOTSDA.toFixed(2);
         gTotalAmountOTSDA= totalAmountOTSDA * totalSDA;
         gTotalAmountOTSDA= gTotalAmountOTSDA.toFixed(2);

@@ -291,7 +291,7 @@ function checkIfMondaySunday(ini, end){
 	}else{
 		document.getElementById("payFrom").style.color="#000";
 	}
-	if(formatoFecha(end,2)!=0){
+	if(formatoFecha(end,2)!=1){
 		document.getElementById("payTo").style.color="#f71505";
 	}else{
 		document.getElementById("payTo").style.color="#000";
@@ -320,8 +320,8 @@ async function createFormsButton(){
 		return;
 	}
 
-	if(formatoFecha(end,2)!=0){
-		document.getElementById("createFormsErrorMessage").innerHTML="End date is not a Sunday";
+	if(formatoFecha(end,2)!=1){
+		document.getElementById("createFormsErrorMessage").innerHTML="End date is not a Monday";
 		return;
 	}
 
