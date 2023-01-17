@@ -392,10 +392,9 @@ function fillHoursTable(){
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart);
+                ignoreBecauseLastMonday= lastMondayToProcess;
+
                 //comprobamos si son horas "Normal"
                 let servFound=0;
 
@@ -504,9 +503,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -667,9 +664,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -792,10 +787,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
-
+                ignoreBecauseLastMonday= lastMondayToProcess;
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -915,9 +907,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1120,9 +1110,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1276,9 +1264,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1426,17 +1412,13 @@ function fillHoursTable(){
             //es Domingo??
             let isSunday=formatoFecha(gridDate,2)
 
-            //es nocturno?
-
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1462,14 +1444,8 @@ function fillHoursTable(){
 
                 let NRHours=0;
 
-                // if( finishHour > 20){
-                //     NRHours= finishHour - 20
-                // }
+                hrsInRange(20, 23, startHour, finishHour);
 
-                // if( startHour < 8){
-                //     NRHours= 8 - startHour;
-                // }
-                console.log(startHour + " .." + finishHour)
                 if( startHour >= 20 && finishHour <= 23){
 
                     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
@@ -1654,9 +1630,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
+                ignoreBecauseLastMonday= lastMondayToProcess;
 
                 //comprobamos si son horas "Extra"
                 let servFound=0;
@@ -1837,10 +1811,7 @@ function fillHoursTable(){
                 let refServ= empHoursArray[x].formRefServ;
 
                 let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                if(lastMondayToProcess>0){
-                    ignoreBecauseLastMonday=1;
-                }
-
+                ignoreBecauseLastMonday= lastMondayToProcess;
                 //comprobamos si son horas "Extra"
                 let servFound=0;
 
@@ -2004,6 +1975,15 @@ function fillHoursTable(){
 
 
     hoursTable.innerHTML= html;
+
+}
+
+function hrsInRange(fromH, toH, startH, finishH){
+
+    console.log(fromH)
+    console.log(toH)
+    console.log(startH)
+    console.log(finishH)
 
 }
 
