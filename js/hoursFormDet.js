@@ -28,6 +28,9 @@ let gTotalAmountNR=0;
 let gAllowancesTotal=0;
 let gTotalHrs=0;
 
+let dayHours=[8,9,10,11,12,13,14,15,16,17,18,19];
+let nightHours=[20,21,22,23,0,1,2,3,4,5,6,7]
+
 let ignoreBecauseLastMonday=0;
 
 window.addEventListener("load", inicio);
@@ -1444,33 +1447,31 @@ function fillHoursTable(){
 
                 let NRHours=0;
 
-                hrsInRange(20, 23, startHour, finishHour);
+                NRHours= hrsInRange(nightHours, startHour, finishHour, dateStart);
 
-                if( startHour >= 20 && finishHour <= 23){
+                // if( startHour >= 20 && finishHour <= 23){
 
-                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour < 20 && finishHour <= 23){
+                // if( startHour < 20 && finishHour <= 23){
 
-                    dateStart.setHours(20);
-                    dateStart.setMinutes(0);
+                //     dateStart.setHours(20);
+                //     dateStart.setMinutes(0);
 
-                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour >= 0 && finishHour <= 8){
+                // if( startHour >= 0 && finishHour <= 8){
 
-                    dateFinish.setHours(8);
-                    dateFinish.setMinutes(0);
+                //     dateFinish.setHours(8);
+                //     dateFinish.setMinutes(0);
 
-                    NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
-                    console.log("si! "+ NRHours)
+                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
                 //console.log("Service found "+servFound+ " times")
 
@@ -1655,29 +1656,31 @@ function fillHoursTable(){
 
                 let SDAHours=0;
 
-                if( startHour >= 8 && finishHour <= 20){
+                SDAHours= hrsInRange(dayHours, startHour, finishHour);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                // if( startHour >= 8 && finishHour <= 20){
+
+                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour >= 8 && finishHour > 20){
+                // if( startHour >= 8 && finishHour > 20){
 
-                    dateFinish.setHours(20);
-                    dateFinish.setMinutes(0);
+                //     dateFinish.setHours(20);
+                //     dateFinish.setMinutes(0);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour < 8 && finishHour < 20){
+                // if( startHour < 8 && finishHour < 20){
 
-                    dateStart.setHours(8);
-                    dateStart.setMinutes(0);
+                //     dateStart.setHours(8);
+                //     dateStart.setMinutes(0);
 
-                    SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
 
                 //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
@@ -1835,29 +1838,31 @@ function fillHoursTable(){
 
                 let OTSDAHours=0;
 
-                if( startHour >= 8 && finishHour <= 20){
+                OTSDAHours= hrsInRange(dayHours, startHour, finishHour);
 
-                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                // if( startHour >= 8 && finishHour <= 20){
+
+                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour >= 8 && finishHour > 20){
+                // if( startHour >= 8 && finishHour > 20){
 
-                    dateFinish.setHours(20);
-                    dateFinish.setMinutes(0);
+                //     dateFinish.setHours(20);
+                //     dateFinish.setMinutes(0);
 
-                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
-                if( startHour < 8 && finishHour < 20){
+                // if( startHour < 8 && finishHour < 20){
 
-                    dateStart.setHours(8);
-                    dateStart.setMinutes(0);
+                //     dateStart.setHours(8);
+                //     dateStart.setMinutes(0);
 
-                    OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
                     
-                }
+                // }
 
 
                 //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
@@ -1978,12 +1983,31 @@ function fillHoursTable(){
 
 }
 
-function hrsInRange(fromH, toH, startH, finishH){
+function hrsInRange(shift, startH, finishH, dateS){
 
-    console.log(fromH)
-    console.log(toH)
-    console.log(startH)
-    console.log(finishH)
+    let hrs=0;
+    let inicio= startH;
+
+    console.log("For "+dateS+ " : " + startH + " "+ finishH)
+
+    for(inicio; inicio <= finishH; inicio++){
+
+        for(y in shift){
+
+            if(inicio==shift[y]){
+
+                console.log(dateS+ " : " + inicio + " "+ shift[y])
+                hrs++
+            }else{
+
+                //console.log(inicio + " --"+ shift[y])
+            }
+        }
+    }
+
+    //console.log(hrs)
+
+    return hrs;
 
 }
 
