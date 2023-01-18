@@ -1447,7 +1447,7 @@ function fillHoursTable(){
 
                 let NRHours=0;
 
-                NRHours= hrsInRange(nightHours, startHour, finishHour, dateStart);
+                NRHours= hrsInRange('night', dateStart, dateFinish);
 
                 // if( startHour >= 20 && finishHour <= 23){
 
@@ -1656,7 +1656,7 @@ function fillHoursTable(){
 
                 let SDAHours=0;
 
-                SDAHours= hrsInRange(dayHours, startHour, finishHour);
+                SDAHours= hrsInRange('day', dateStart, dateFinish);
 
                 // if( startHour >= 8 && finishHour <= 20){
 
@@ -1838,7 +1838,7 @@ function fillHoursTable(){
 
                 let OTSDAHours=0;
 
-                OTSDAHours= hrsInRange(dayHours, startHour, finishHour);
+                OTSDAHours= hrsInRange('day', dateStart, dateFinish);
 
                 // if( startHour >= 8 && finishHour <= 20){
 
@@ -1983,27 +1983,50 @@ function fillHoursTable(){
 
 }
 
-function hrsInRange(shift, startH, finishH, dateS){
+function hrsInRange(shift, startH, finishH){
 
     let hrs=0;
-    let inicio= startH;
+    let t1 = startH.getHours();
+    let t2 = finishH.getHours();
 
-    console.log("For "+dateS+ " : " + startH + " "+ finishH)
+    switch(shift){
 
-    for(inicio; inicio <= finishH; inicio++){
-
-        for(y in shift){
-
-            if(inicio==shift[y]){
-
-                console.log(dateS+ " : " + inicio + " "+ shift[y])
-                hrs++
-            }else{
-
-                //console.log(inicio + " --"+ shift[y])
-            }
-        }
+        case 'day':
+            getDayHrs();
+            break;
+        case 'night':
+            getNightHrs();
+            break;
     }
+
+    function getDayHrs(){
+
+        console.log('day');
+    }
+
+    function getNightHrs(){
+
+        console.log('night');
+    }
+
+    // let inicio= startH;
+
+    // console.log("For "+dateS+ " : " + startH + " "+ finishH)
+
+    // for(inicio; inicio <= finishH; inicio++){
+
+    //     for(y in shift){
+
+    //         if(inicio==shift[y]){
+
+    //             console.log(dateS+ " : " + inicio + " "+ shift[y])
+    //             hrs++
+    //         }else{
+
+    //             //console.log(inicio + " --"+ shift[y])
+    //         }
+    //     }
+    // }
 
     //console.log(hrs)
 
