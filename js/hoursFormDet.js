@@ -16,7 +16,9 @@ let totalSun=0;
 let totalNR=0;
 let totalSDA=0;
 let totalOTSDA=0;
+let totalSL=0;
 let hourlyRate=0;
+let totalSLInd=0;
 
 let gTotalAmountDT=0;
 let gTotalAmountTH=0;
@@ -30,6 +32,8 @@ let gTotalAmountSDA=0;
 let gTotalAmountOTSDA=0;
 let gTotalHrs=0;
 let gSDAOTSDATotals=0;
+let gTotalAmountSL=0;
+let totalHrsSum=0;
 
 let ignoreBecauseLastMonday=0;
 
@@ -1943,6 +1947,224 @@ function fillHoursTable(){
         html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gSDAOTSDATotals'>"+gSDAOTSDATotals+"</td></tr>";
     }
 
+    //SL header
+    SLHeader();
+
+    function SLHeader(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td id='totalSLInd'>"+totalSLInd+"</td><td></td><td>SL</td></tr>";
+    }
+
+
+    //Total Hrs
+    totalHrsRow();
+
+    function totalHrsRow(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        totalHrsSum= totalSLInd + totalSDA + totalNR + totalSun + totalSat - totalExtraHRSFR;
+        valor=0;
+
+        html+= "<tr><td>TOTAL HOURS</td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td id='totalHrsSum'>"+totalHrsSum+"</td><td></td><td>Total Hours</td></tr>";
+    }
+
+    //@ SL
+
+    SL();
+
+    function SL(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+        totalSL= 0;
+
+        let acumuladorHRS=[];
+
+        html+= "<tr><td>SL</td>";
+
+        //vamos dia por dia
+        for (let i=0; i<= days_difference; i++){
+
+            let gridDate= date1.setDate(date1.getDate()+valor);
+            let gridDateF= formatoFecha(gridDate,1);
+            //let gridDateNo= formatoFecha(gridDate,5);
+            //let gridWeekDayName= formatoFecha(gridDate,6);
+            let dato="";
+            let formHRS=0;
+            let idForm=0;
+            let formRefServ=1;
+            let isBH=0;
+            let payTypeServ="";
+            let catServ="";
+            let dateStart="";
+            let dateFinish="";
+            let startHour="";
+            let finishHour="";
+
+            //es bankholiday?
+            for(x in BHArray){
+
+                if(gridDateF== BHArray[x].datebh){
+                    
+                    isBH=1;
+                }
+            }
+
+            //es Domingo??
+            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+
+            let isWeekEnd= 0;
+
+            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+
+                isWeekEnd= 1;
+            }
+
+            for(x in empHoursArray){
+
+                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let refServ= empHoursArray[x].formRefServ;
+
+                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+                ignoreBecauseLastMonday= lastMondayToProcess;
+                //comprobamos si son horas "Extra"
+                let servFound=0;
+
+                for(z in servsArray){
+                    
+                    if(servsArray[z].refServ == refServ){
+                        payTypeServ= servsArray[z].payTypeServ;
+                        catServ= servsArray[z].catServ;
+                        servFound=1;
+                    }
+                }
+
+
+                if(gridDateF== formLabDateStartF && payTypeServ=="SL"){
+
+                    idForm= empHoursArray[x].idForm;
+                    formHRS= 1;
+                    //dato= diff;
+                    totalSL=totalSL+parseFloat(formHRS);
+
+                    console.log(gridDateF + " SL: "+ formHRS)
+ 
+                    dato=formHRS.toFixed(2);
+
+                }
+            }
+
+            html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " idForm="+idForm+
+            " formRefServ="+formRefServ+
+            " formHRS="+formHRS+
+            " isBH="+isBH+
+            " startHour="+startHour+
+            " finishHour="+finishHour+
+            ">"+dato+"</td>";
+            valor=1;
+        }
+
+        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+        console.log(totalSL)
+        let totalAmountSL= 30 ;
+        totalAmountSL= totalAmountSL.toFixed(2);
+        gTotalAmountSL= totalAmountSL * totalSL;
+        gTotalAmountSL= gTotalAmountSL.toFixed(2);
+
+        html +="<td id='totalSL'>"+totalSL.toFixed(2)+
+        "</td><td id='totalAmountSL'>"+30+
+        "</td><td id='gTotalAmountSL'>"+gTotalAmountSL+"</td></tr>";
+
+    }
+
+    //SUBST1
+    SUBST1();
+
+    function SUBST1(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        html+= "<tr><td>SUBST</td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td>0</td><td></td><td></td></tr>";
+    }
+
+    //SUBST2
+    SUBST2();
+
+    function SUBST2(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        html+= "<tr><td>SUBST</td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td>0</td><td></td><td></td></tr>";
+    }
+
+    //Total SL
+    totalSLAmountFn();
+
+    function totalSLAmountFn(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG'>"+gTotalAmountSL+"</td></tr>";
+    }
 
     hoursTable.innerHTML= html;
 

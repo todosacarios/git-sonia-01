@@ -86,6 +86,11 @@
     font-weight: bold;
 }
 
+#hoursTable td:hover{
+
+    background-color: #97a87491;
+}
+
 
 
 
