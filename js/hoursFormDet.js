@@ -26,10 +26,10 @@ let gTotalAmountSat=0;
 let gTotalAmountSun=0;
 let gTotalAmountNR=0;
 let gAllowancesTotal=0;
+let gTotalAmountSDA=0;
+let gTotalAmountOTSDA=0;
 let gTotalHrs=0;
-
-let dayHours=[8,9,10,11,12,13,14,15,16,17,18,19];
-let nightHours=[20,21,22,23,0,1,2,3,4,5,6,7]
+let gSDAOTSDATotals=0;
 
 let ignoreBecauseLastMonday=0;
 
@@ -1447,33 +1447,8 @@ function fillHoursTable(){
 
                 let NRHours=0;
 
+                //console.log(dateStart)
                 NRHours= hrsInRange('night', dateStart, dateFinish);
-
-                // if( startHour >= 20 && finishHour <= 23){
-
-                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour < 20 && finishHour <= 23){
-
-                //     dateStart.setHours(20);
-                //     dateStart.setMinutes(0);
-
-                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour >= 0 && finishHour <= 8){
-
-                //     dateFinish.setHours(8);
-                //     dateFinish.setMinutes(0);
-
-                //     NRHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                //console.log("Service found "+servFound+ " times")
 
                 if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0 && ignoreBecauseLastMonday==0){
 
@@ -1481,6 +1456,8 @@ function fillHoursTable(){
                     formHRS= NRHours;
                     //dato= diff;
                     totalNR=totalNR+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -night/Normal: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1491,7 +1468,7 @@ function fillHoursTable(){
                     }
 
                     formHRS= formHRS + acumulado
-                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+                    
                     dato=formHRS.toFixed(2);
 
                     acumuladorHRS[gridDateF]= formHRS;
@@ -1502,6 +1479,8 @@ function fillHoursTable(){
                     formHRS= NRHours;
                     //dato= diff;
                     totalNR=totalNR+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -night/FR: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1544,7 +1523,7 @@ function fillHoursTable(){
 
     }
 
-    //Overtime Total
+    //Allowances Total
     allowancesTotal();
 
     function allowancesTotal(){
@@ -1568,7 +1547,7 @@ function fillHoursTable(){
         gAllowancesTotal= parseFloat(gTotalAmountSat) + parseFloat(gTotalAmountSun) + parseFloat(gTotalAmountNR);
         gAllowancesTotal= gAllowancesTotal.toFixed(2);
 
-        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gOvertimeTotal'>"+gAllowancesTotal+"</td></tr>";
+        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gAllowancesTotal'>"+gAllowancesTotal+"</td></tr>";
     }
 
     //@SDA 5%
@@ -1658,32 +1637,6 @@ function fillHoursTable(){
 
                 SDAHours= hrsInRange('day', dateStart, dateFinish);
 
-                // if( startHour >= 8 && finishHour <= 20){
-
-                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour >= 8 && finishHour > 20){
-
-                //     dateFinish.setHours(20);
-                //     dateFinish.setMinutes(0);
-
-                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour < 8 && finishHour < 20){
-
-                //     dateStart.setHours(8);
-                //     dateStart.setMinutes(0);
-
-                //     SDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-
-                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
                 if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
 
@@ -1691,6 +1644,8 @@ function fillHoursTable(){
                     formHRS= SDAHours;
                     //dato= diff;
                     totalSDA=totalSDA+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -day/Normal: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1712,6 +1667,8 @@ function fillHoursTable(){
                     formHRS= SDAHours;
                     //dato= diff;
                     totalSDA=totalSDA+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -day/FR: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1840,39 +1797,14 @@ function fillHoursTable(){
 
                 OTSDAHours= hrsInRange('day', dateStart, dateFinish);
 
-                // if( startHour >= 8 && finishHour <= 20){
-
-                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour >= 8 && finishHour > 20){
-
-                //     dateFinish.setHours(20);
-                //     dateFinish.setMinutes(0);
-
-                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-                // if( startHour < 8 && finishHour < 20){
-
-                //     dateStart.setHours(8);
-                //     dateStart.setMinutes(0);
-
-                //     OTSDAHours= (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-                    
-                // }
-
-
-                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1 && ignoreBecauseLastMonday==0 && ignoreBecauseLastMonday==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1 && ignoreBecauseLastMonday==0 ){
 
                     idForm= empHoursArray[x].idForm;
                     formHRS= OTSDAHours;
                     //dato= diff;
                     totalOTSDA=totalOTSDA+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -day/Normal/WeekEnd: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1895,6 +1827,8 @@ function fillHoursTable(){
                     //dato= diff;
                     totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
+                    console.log(gridDateF + " -day/Normal/BankH: "+ formHRS)
+
                     let acumulado=0;
 
                     //revisamos si ya habia horas ese dia
@@ -1916,6 +1850,8 @@ function fillHoursTable(){
                     //dato= diff;
                     totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
+                    console.log(gridDateF + " -day/FR/WeekEnd: "+ formHRS)
+
                     let acumulado=0;
 
                     //revisamos si ya habia horas ese dia
@@ -1936,6 +1872,8 @@ function fillHoursTable(){
                     formHRS= OTSDAHours;
                     //dato= diff;
                     totalOTSDA=totalOTSDA+parseFloat(formHRS);
+
+                    console.log(gridDateF + " -day/FR/BankH: "+ formHRS)
 
                     let acumulado=0;
 
@@ -1969,13 +1907,40 @@ function fillHoursTable(){
 
         let totalAmountOTSDA= 0.05 * hourlyRate;
         totalAmountOTSDA= totalAmountOTSDA.toFixed(2);
-        gTotalAmountOTSDA= totalAmountOTSDA * totalSDA;
+        gTotalAmountOTSDA= totalAmountOTSDA * totalOTSDA;
         gTotalAmountOTSDA= gTotalAmountOTSDA.toFixed(2);
 
         html +="<td id='totalOTSDA'>"+totalOTSDA.toFixed(2)+
         "</td><td id='totalAmountOTSDA'>"+totalAmountOTSDA+
         "</td><td id='gTotalAmountOTSDA'>"+gTotalAmountOTSDA+"</td></tr>";
 
+    }
+
+    //SDA OTSDA Totals Total
+    SDAOTSDATotals();
+
+    function SDAOTSDATotals(){
+
+        date1= new Date(ini); 
+        date2= new Date(end);
+
+        valor=0;
+
+        let dayBColor="#e0e0e0";
+
+        html+= "<tr><td></td>";
+
+        for (let i=0; i<= days_difference; i++){
+
+            html +="<td tipo=0></td>";
+            valor=1;
+        }
+
+
+        gSDAOTSDATotals= parseFloat(gTotalAmountSDA) + parseFloat(gTotalAmountOTSDA) ;
+        gSDAOTSDATotals= gSDAOTSDATotals.toFixed(2);
+
+        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gSDAOTSDATotals'>"+gSDAOTSDATotals+"</td></tr>";
     }
 
 
@@ -2001,34 +1966,62 @@ function hrsInRange(shift, startH, finishH){
 
     function getDayHrs(){
 
-        console.log('day');
+        if(t1 <8 && t2 >8 && t2<=20){
+
+            startH.setHours(8);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
+
+        if(t1 <8 && t2 >=20 ){
+            
+            startH.setHours(8);
+            finishH.setHours(20);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
+
+        if(t1 >=8 && t2 <=20){
+
+            //startH.setHours(8);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
+
+        if(t1 >=8 && t2 >20){
+
+            finishH.setHours(20);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
+
     }
 
     function getNightHrs(){
 
-        console.log('night');
+        if(t1 <=20  && t2>=20 && t2 <=23){
+
+            startH.setHours(20);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+
+        }
+
+        if(t1 >20 && t2>=20 && t2 <=23){
+
+            //startH.setHours(8);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+
+        }
+
+        if(t1 >=0 && t2 <=8){
+
+            //finishH.setHours(8);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
+
+        if(t1 >=0 && t2 >8){
+
+            finishH.setHours(8);
+            hrs= (finishH.getTime()- startH.getTime()) / 3600000;
+        }
     }
 
-    // let inicio= startH;
-
-    // console.log("For "+dateS+ " : " + startH + " "+ finishH)
-
-    // for(inicio; inicio <= finishH; inicio++){
-
-    //     for(y in shift){
-
-    //         if(inicio==shift[y]){
-
-    //             console.log(dateS+ " : " + inicio + " "+ shift[y])
-    //             hrs++
-    //         }else{
-
-    //             //console.log(inicio + " --"+ shift[y])
-    //         }
-    //     }
-    // }
-
-    //console.log(hrs)
 
     return hrs;
 
