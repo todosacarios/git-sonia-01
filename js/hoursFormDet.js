@@ -37,6 +37,10 @@ let totalHrsSum=0;
 
 let ignoreBecauseLastMonday=0;
 
+let hrsType=["Normal", "Extra", "Fr", "Th", "Dt", "Sat", "Sun", "Nr", "SDA", "OTSDA", "SL"];
+
+
+
 window.addEventListener("load", inicio);
 
 async function inicio(){
@@ -58,6 +62,10 @@ async function inicio(){
     document.getElementById("formSalary").value= empHoursArray[0].formSalary;
     document.getElementById("formCHrs").value= empHoursArray[0].formCHrs;
     document.getElementById("formEmpCode").value= empHoursArray[0].formEmpCode;
+
+    document.getElementById("hrsLocationInput").value= servsArray[0].clientNameServ;
+    document.getElementById("hrsMonthInput").value= formRef.slice(0, 3);
+    document.getElementById("hrsYearInput").value= formRef.slice(-2);
 
     //Si aun no tiene asignado un precio hora, se le busca el que le corresponde 
     let contractDate= empHoursArray[0].formContractDate;
@@ -445,12 +453,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=0"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -558,12 +567,13 @@ function fillHoursTable(){
 
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=1"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -718,12 +728,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=2"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -840,12 +851,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=3"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -990,12 +1002,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=4"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1195,12 +1208,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=5"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1349,12 +1363,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=6"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1504,12 +1519,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=7"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1692,12 +1708,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=8"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -1897,12 +1914,13 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=9"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -2047,6 +2065,10 @@ function fillHoursTable(){
 
             for(x in empHoursArray){
 
+                //Cálculo de horas
+                dateStart= new Date(empHoursArray[x].formLabDateStart);
+                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
 
@@ -2080,18 +2102,18 @@ function fillHoursTable(){
             }
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
+            " hrsType=10"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
             " isBH="+isBH+
-            " startHour="+startHour+
-            " finishHour="+finishHour+
+            " dateStart="+dateStart+
+            " dateFinih="+dateFinish+
             ">"+dato+"</td>";
             valor=1;
         }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
-        console.log(totalSL)
+        //console.log(totalSL)
         let totalAmountSL= 30 ;
         totalAmountSL= totalAmountSL.toFixed(2);
         gTotalAmountSL= totalAmountSL * totalSL;
@@ -2259,7 +2281,20 @@ document.addEventListener('click', function(e) {
         var isBH = e.target.getAttribute("isBH");
         var startHour = e.target.getAttribute("startHour");
         var finishHour = e.target.getAttribute("finishHour");
-        alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH+ " startHour: "+ startHour + " finishHour: "+ finishHour);
+        document.getElementById("greyBackground").style.display="block";
+        document.getElementById("hrsEditDiv").style.display="block";
+        //alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH+ " startHour: "+ startHour + " finishHour: "+ finishHour);
     }
     
 });
+
+document.getElementById("hrsEditDiv_CloseButton").addEventListener("click", hrsEditDiv_CloseButton);
+
+function hrsEditDiv_CloseButton(){
+
+    document.getElementById("greyBackground").style.display="none";
+    document.getElementById("hrsEditDiv").style.display="none"; 
+}
+
+
+

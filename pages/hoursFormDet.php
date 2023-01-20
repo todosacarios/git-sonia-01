@@ -26,8 +26,18 @@
     <input type="number" id="empCode" value='<?php echo $empCode ?>' style="display: none">
     <div id="hrsFormDetContainer">
         <div id="hrsFormDetHeader" class="myBorder">
-            <div class="one myBorder">
-                <p>Al-Leave</p> 
+            <div id="hrsCodes" class="one myBorder">
+                <div>
+                    <p>Al = Leave</p>
+                    <p>SL = Sick</p>
+                    <p>Abs = Absent</p>
+                    <p>Mat = Maternity</p>
+                </div>
+                <div>
+                    <p>Act = Acting</p>
+                    <p>Unpd = Unpaid Leave</p>
+                    <p>Trn = Training</p>
+                </div>
             </div>
             <div class="two myBorder">
                 <div class="two-one myBorder"><p>Care Agency</p></div>
@@ -67,6 +77,42 @@
             </div>
         </div>
         <div id="hrsFormDetBody"><table id="hoursTable"></table></div>
+        <div id="hrsFooter">
+            <div id="hrsFooterDiv1">
+                <div><label>Month: </label><input type="text" id="hrsMonthInput" readonly></div>
+                <div><label>Year: </label><input type="text" id="hrsYearInput" readonly></div>
+                <div><label>Prepared: </label><input type="text" id="hrsPrepared" readonly></div>
+                <div><label>Location: </label><input type="text" id="hrsLocationInput" readonly></div>
+                <div><label>Checked By: </label><input type="text" id="hrsCheckedByInput" readonly></div>
+            </div>
+            <div id="hrsFooterDiv2">
+                <p>1. Allowances to be paid to employees whilst on annual Leave and training.</p>
+                <p>2. They do not receive allowances whilst on sick leave.</p>
+                <p>3. They do receive allowances whilst on sick leave- Injury at work</p>
+            </div>
+        </div>
+        <div id="greyBackground" style="display: none"></div>
+        <div id="hrsEditDiv" style="display: none">
+            <div id="hrsEditDivSub1">
+                <div id="hrsEditDivFields" >
+                    <!-- <label for="formLabDateStartEdit">Start</label>
+                    <input type="date" id="formLabDateStartEdit"> -->
+                    <label for="idFormEdit">id</label>
+                    <input type="number" id="idFormEdit">
+                    <label for="formRefServEdit">Service Ref</label>
+                    <input type="number" id="formRefServEdit">
+                    <label for="formHRSEdit">Hrs</label>
+                    <input type="number" id="formHRSEdit">
+                    <label for="dateStartEdit">Start</label>
+                    <input type="date" id="dateStartEdit">
+                    <label for="dateFinishEdit">Finish</label>
+                    <input type="date" id="dateFinishEdit">
+                </div>
+                <div id="hrsEditDivButtons">
+                    <button id="hrsEditDiv_CloseButton" class="myButtons">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
