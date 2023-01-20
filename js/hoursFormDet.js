@@ -2273,16 +2273,29 @@ function hrsInRange(shift, startH, finishH){
 
 document.addEventListener('click', function(e) {
 
+
     if(e.target.tagName=="TD" && e.target.getAttribute("tipo")==1){
-        var formLabDateStart = e.target.getAttribute("formLabDateStart");
-        var idForm = e.target.getAttribute("idForm");
-        var formRefServ = e.target.getAttribute("formRefServ");
-        var formHRS = e.target.getAttribute("formHRS");
-        var isBH = e.target.getAttribute("isBH");
-        var startHour = e.target.getAttribute("startHour");
-        var finishHour = e.target.getAttribute("finishHour");
+
+
+
+        document.getElementById("idFormEdit").value= e.target.getAttribute("idForm");
+        document.getElementById("hrsTypeEdit").value= e.target.getAttribute("hrsType");  
+        document.getElementById("formRefServEdit").value= e.target.getAttribute("formRefServ");
+        document.getElementById("formHRSEdit").value= e.target.getAttribute("formHRS");   
+        document.getElementById("dateStartEdit").value= e.target.getAttribute("dateStart");
+        document.getElementById("dateFinishEdit").value= e.target.getAttribute("dateFinish");   
+
+        // var formLabDateStart = e.target.getAttribute("formLabDateStart");
+        // var idForm = e.target.getAttribute("idForm");
+        // var formRefServ = e.target.getAttribute("formRefServ");
+        // var formHRS = e.target.getAttribute("formHRS");
+        // var isBH = e.target.getAttribute("isBH");
+        // var startHour = e.target.getAttribute("startHour");
+        // var finishHour = e.target.getAttribute("finishHour");
         document.getElementById("greyBackground").style.display="block";
         document.getElementById("hrsEditDiv").style.display="block";
+
+
         //alert(formLabDateStart +" idForm: "+idForm+" formRefServ: "+formRefServ +" formHRS: "+formHRS +" isBH: "+isBH+ " startHour: "+ startHour + " finishHour: "+ finishHour);
     }
     

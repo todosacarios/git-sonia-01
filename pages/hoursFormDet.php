@@ -97,6 +97,8 @@
                 <div id="hrsEditDivFields" >
                     <!-- <label for="formLabDateStartEdit">Start</label>
                     <input type="date" id="formLabDateStartEdit"> -->
+                    <label for="hrsTypeEdit">id</label>
+                    <input type="number" id="hrsTypeEdit">
                     <label for="idFormEdit">id</label>
                     <input type="number" id="idFormEdit">
                     <label for="formRefServEdit">Service Ref</label>

@@ -141,19 +141,17 @@
 #hrsEditDiv{
 
     position: absolute;
-    top: 40%;
-    background-color: white;
-    height: 150px;
+    top: 30%;
+    background-color: rgb(195, 195, 195);
+    height: 200px;
     border-style: solid;
     border-width: 1px;
     border-color: grey;
     border-radius: 5px;
-    padding: 15px;
     margin: 0 auto;
     left: 0;
     right: 0;
-    width: 400px;
-
+    width: 35%;
 }
 
 #greyBackground{
@@ -169,8 +167,19 @@
 
 #hrsEditDivSub1{
 
+    position: relative;
+    background-color: rgb(255, 255, 255);
     display: grid;
     grid-template-rows: 4fr 1fr;
+    top: 20px;
+    padding: 15px;
+    overflow:auto;
+}
+
+#hrsEditDivFields{
+
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 2fr;
 }
 
 #hrsEditDivButtons{
@@ -190,16 +199,12 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-#hrsEditDivFields{
-
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
 #hrsEditDivSub1 input, #hrsEditDivSub1 label{
 
     margin: 5px;
+    
 }
+
 
 
 
