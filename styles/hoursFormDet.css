@@ -196,8 +196,8 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
-}
+    -moz-appearance: textfield;
+  }
 
 #hrsEditDivSub1 input, #hrsEditDivSub1 label{
 

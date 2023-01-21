@@ -105,10 +105,10 @@
                     <input type="number" id="formRefServEdit">
                     <label for="formHRSEdit">Hrs</label>
                     <input type="number" id="formHRSEdit">
-                    <label for="dateStartEdit">Start</label>
-                    <input type="date" id="dateStartEdit">
+                    <!-- <label for="dateStartEdit">Start</label>
+                    <input type="text" id="dateStartEdit">
                     <label for="dateFinishEdit">Finish</label>
-                    <input type="date" id="dateFinishEdit">
+                    <input type="text" id="dateFinishEdit"> -->
                 </div>
                 <div id="hrsEditDivButtons">
                     <button id="hrsEditDiv_CloseButton" class="myButtons">Close</button>
