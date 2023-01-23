@@ -392,6 +392,7 @@ function fillHoursTable(){
             let dateFinish="";
             let startHour="";
             let finishHour="";
+            let formHrsAssignType=0;
 
             //es bankholiday?
             for(x in BHArray){
@@ -423,34 +424,55 @@ function fillHoursTable(){
 
                 //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && ignoreBecauseLastMonday==0){
+                formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
 
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                switch(formHrsAssignType){
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+                    case 0:
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                        if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-                    //dato= diff;
-                    totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+                            dateStart= new Date(empHoursArray[x].formLabDateStart);
+                            dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+        
+                            startHour= dateStart.getHours();
+                            finishHour= dateFinish.getHours();
+        
+                            var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+        
+                            idForm= empHoursArray[x].idForm;
+                            formHRS= diff;
+                            //dato= diff;
+                            totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+        
+                            let acumulado=0;
+        
+                            if(acumuladorHRS[gridDateF]){
+        
+                                acumulado = acumuladorHRS[gridDateF];
+                            }
+        
+                            formHRS= formHRS + acumulado
+                            dato=formHRS.toFixed(2);
+        
+                            acumuladorHRS[gridDateF]= formHRS;
+                        }
 
-                    let acumulado=0;
+                        break;
 
-                    if(acumuladorHRS[gridDateF]){
+                    case 1:
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+                        formHRS= parseFloat(empHoursArray[x].formHrs)
+                        dato=formHRS.toFixed(2);
+                        break;
 
-                    formHRS= formHRS + acumulado
-                    dato=formHRS.toFixed(2);
-
-                    acumuladorHRS[gridDateF]= formHRS;
                 }
+
+
             }
+            
+            dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
+            dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
             " hrsType=0"+
@@ -459,7 +481,8 @@ function fillHoursTable(){
             " formHRS="+formHRS+
             " isBH="+isBH+
             " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
+            " dateFinish="+dateFinish+
+            " formHrsAssignType="+formHrsAssignType+
             ">"+dato+"</td>";
             valor=1;
         }
@@ -2279,9 +2302,10 @@ document.addEventListener('click', function(e) {
         document.getElementById("idFormEdit").value= e.target.getAttribute("idForm");
         document.getElementById("hrsTypeEdit").value= e.target.getAttribute("hrsType");  
         document.getElementById("formRefServEdit").value= e.target.getAttribute("formRefServ");
-        document.getElementById("formHRSEdit").value= e.target.getAttribute("formHRS");  
-        //document.getElementById("dateStartEdit").value= e.target.getAttribute("dateStart");
-        //document.getElementById("dateFinishEdit").value= e.target.getAttribute("dateFinish"); 
+        document.getElementById("formHRSEdit").value= e.target.getAttribute("formHRS");
+        document.getElementById("formHrsAssignTypeEdit").value= e.target.getAttribute("formHrsAssignType");   
+        document.getElementById("dateStartEdit").value= e.target.getAttribute("dateStart");
+        document.getElementById("dateFinishEdit").value= e.target.getAttribute("dateFinish"); 
 
         // var formLabDateStart = e.target.getAttribute("formLabDateStart");
         // var idForm = e.target.getAttribute("idForm");

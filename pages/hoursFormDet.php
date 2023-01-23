@@ -97,21 +97,24 @@
                 <div id="hrsEditDivFields" >
                     <!-- <label for="formLabDateStartEdit">Start</label>
                     <input type="date" id="formLabDateStartEdit"> -->
-                    <label for="hrsTypeEdit">id</label>
+                    <label for="hrsTypeEdit">Hrs Type</label>
                     <input type="number" id="hrsTypeEdit">
-                    <label for="idFormEdit">id</label>
+                    <label for="formHrsAssignTypeEdit">Hrs Assign Type</label>
+                    <input type="number" id="formHrsAssignTypeEdit">
+                    <label for="idFormEdit">Id</label>
                     <input type="number" id="idFormEdit">
                     <label for="formRefServEdit">Service Ref</label>
                     <input type="number" id="formRefServEdit">
                     <label for="formHRSEdit">Hrs</label>
                     <input type="number" id="formHRSEdit">
-                    <!-- <label for="dateStartEdit">Start</label>
+                    <label for="dateStartEdit">Start</label>
                     <input type="text" id="dateStartEdit">
                     <label for="dateFinishEdit">Finish</label>
-                    <input type="text" id="dateFinishEdit"> -->
+                    <input type="text" id="dateFinishEdit">
                 </div>
                 <div id="hrsEditDivButtons">
                     <button id="hrsEditDiv_CloseButton" class="myButtons">Close</button>
+                    <button id="hrsEditDiv_UpdateButton" class="myButtons buttonGreen">Update</button>
                 </div>
             </div>
         </div>

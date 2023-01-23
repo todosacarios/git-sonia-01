@@ -11,7 +11,9 @@ function formatoFecha(laFecha, modo){
         var month = date.getMonth() + 1;
         var year = date.getFullYear();
         var weekDay=date.getDay(); //0 for sunday
-        var monthName=monthNames[date.getMonth()]
+        var monthName= monthNames[date.getMonth()]
+        var hour= date.getHours();
+        var min= date.getMinutes();
     
         if (month < 10) month = "0" + month;
         if (day < 10) day = "0" + day;
@@ -44,6 +46,10 @@ function formatoFecha(laFecha, modo){
             case 7:
                 //28 Dec
                 var miFecha = day + " " + monthName;
+                break;
+            case 8:
+                //01 Dec 2022 12:00
+                var miFecha = day + " " + monthName + " " + year + " " + hour + ":" + min;
                 break;
         }
         
