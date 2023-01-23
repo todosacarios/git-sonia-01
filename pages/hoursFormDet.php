@@ -98,7 +98,7 @@
                     <!-- <label for="formLabDateStartEdit">Start</label>
                     <input type="date" id="formLabDateStartEdit"> -->
                     <label for="hrsTypeEdit">Hrs Type</label>
-                    <input type="number" id="hrsTypeEdit">
+                    <input type="text" id="hrsTypeEdit">
                     <label for="formHrsAssignTypeEdit">Hrs Assign Type</label>
                     <input type="number" id="formHrsAssignTypeEdit">
                     <label for="idFormEdit">Id</label>
