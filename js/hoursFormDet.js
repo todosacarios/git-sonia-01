@@ -506,6 +506,7 @@ function fillHoursTable(){
 
         date1= new Date(ini); 
         date2= new Date(end);
+        let forcedValueColor= "#000";
 
         valor=0;
         totalExtraHRS= 0;
@@ -534,6 +535,7 @@ function fillHoursTable(){
             let startHour="";
             let finishHour="";
             let formHrsAssignType=0;
+            
 
             //es bankholiday?
             for(x in BHArray){
@@ -606,6 +608,8 @@ function fillHoursTable(){
                             totalExtraHRS= formHRS;
 
                             acumuladorHRS[gridDateF]= formHRS;
+
+                            forcedValueColor="#fc0303";
                             break;
                     }
                 }
@@ -625,7 +629,7 @@ function fillHoursTable(){
             " dateStart="+dateStart+
             " dateFinish="+dateFinish+
             " formHrsAssignType="+formHrsAssignType+
-            ">"+dato+"</td>";
+            " style='color:"+forcedValueColor+"'>"+dato+"</td>";
             valor=1;
         }
 
@@ -821,8 +825,8 @@ function fillHoursTable(){
         gTotalAmountFR= gTotalAmountFR.toFixed(2);
 
         html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR.toFixed(2)+
-        "</td><td id='totalExtraHRSFR'>"+totalExtraHRSFR+
-        "</td><td id='gTotalExtraHRSFR'>"+gTotalExtraHRSFR+"</td></tr>";
+        "</td><td id='totalAmountFR'>"+totalAmountFR+
+        "</td><td id='gTotalAmountFR'>"+gTotalAmountFR+"</td></tr>";
 
     }
 
@@ -1139,7 +1143,7 @@ function fillHoursTable(){
         gTotalAmountDT= gTotalAmountDT.toFixed(2);
 
         html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT.toFixed(2)+
-        "</td><td id='totalExtraHRSDT'>"+totalExtraHRSDT+
+        "</td><td id='totalAmountDT'>"+totalAmountDT+
         "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
 
     }
@@ -2141,7 +2145,7 @@ function fillHoursTable(){
 
         let acumuladorHRS=[];
 
-        html+= "<tr><td>SL</td>";
+        html+= "<tr><td>SI</td>";
 
         //vamos dia por dia
         for (let i=0; i<= days_difference; i++){
