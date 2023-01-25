@@ -343,24 +343,6 @@ function fillHoursTable(){
         html +="<td></td><td></td><td></td></tr>";
     }
 
-    //Comprobamos que si pertenece al ultimo lunes y ya no entra en la paga
-    function lastMondayCheck(gridDateF, startingAt){
-
-        let response=0;
-
-        let date2F= formatoFecha(date2,1);
-
-        if(gridDateF==date2F){
-
-            let dStart= new Date(startingAt);
-            //Hora a la que empieza el servicio del ultimo lunes
-            let sHour= dStart.getHours();
-            response=sHour;
-        }
-            
-            return response;
-    }
-
     //Normal Hrs
 
     normalHRS();
@@ -373,8 +355,6 @@ function fillHoursTable(){
         valor=0;
         totalNormalHRS= 0;
 
-        let acumuladorHRS=[];
-
         html+= "<tr><td>Normal</td>";
 
         //vamos dia por dia
@@ -382,8 +362,6 @@ function fillHoursTable(){
 
             let gridDate= date1.setDate(date1.getDate()+valor);
             let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
             let dato="";
             let formHRS=0;
             let idForm=0;
@@ -392,8 +370,6 @@ function fillHoursTable(){
             let payTypeServ="";
             let dateStart="";
             let dateFinish="";
-            let startHour="";
-            let finishHour="";
             let formHrsAssignType=0;
 
             //es bankholiday?
@@ -409,9 +385,7 @@ function fillHoursTable(){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
-
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart);
-                ignoreBecauseLastMonday= lastMondayToProcess;
+                idForm= empHoursArray[x].idForm;
 
                 //comprobamos si son horas "Normal"
                 let servFound=0;
@@ -424,51 +398,29 @@ function fillHoursTable(){
                     }
                 }
 
-                //console.log("Service found "+servFound+ " times")
+                servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && ignoreBecauseLastMonday==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" ){
 
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
-
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-
+                    //Son horas asignadas por el usuario o por el GESAD?
                     formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
                     
                     switch(formHrsAssignType){
 
                         case 0:
 
-                            //dato= diff;
-                            totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+                            var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                            let acumulado=0;
-
-                            if(acumuladorHRS[gridDateF]){
-
-                                acumulado = acumuladorHRS[gridDateF];
-                            }
-
-                            formHRS= formHRS + acumulado
-                            dato=formHRS.toFixed(2);
-
-                            acumuladorHRS[gridDateF]= formHRS;
+                            formHRS= diff;
 
                             break;
 
                         case 1:
 
                             formHRS= parseFloat(empHoursArray[x].formHRS)
-                            dato=formHRS.toFixed(2);
-                            totalNormalHRS= formHRS;
-
-                            acumuladorHRS[gridDateF]= formHRS;
 
                             break;
 
@@ -477,6 +429,9 @@ function fillHoursTable(){
                 }
 
             }
+
+            totalNormalHRS=totalNormalHRS+parseFloat(formHRS);
+            formHRS== 0? "": dato=formHRS.toFixed(2);
             
             dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
             dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
@@ -490,7 +445,7 @@ function fillHoursTable(){
             " dateStart="+dateStart+
             " dateFinish="+dateFinish+
             " formHrsAssignType="+formHrsAssignType+
-            ">"+dato+"</td>";
+            " class='resaltarSiEditable'>"+dato+"</td>";
             valor=1;
         }
 
@@ -498,144 +453,117 @@ function fillHoursTable(){
 
     }
 
-    //Extra Hrs
+        //Extra Hrs
 
-    extraHRS();
+        extraHRS();
 
-    function extraHRS(){
-
-        date1= new Date(ini); 
-        date2= new Date(end);
-        let forcedValueColor= "#000";
-
-        valor=0;
-        totalExtraHRS= 0;
-
-        html+= "<tr><td>Extra</td>";
-
-        let acumuladorHRS=[];
-
-        //console.log(acumuladorHRS);
-
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
-
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
-            let formHrsAssignType=0;
-            
-
-            //es bankholiday?
-            for(x in BHArray){
-
-                if(gridDateF== BHArray[x].datebh){
-                    
-                    isBH=1;
-                }
-            }
-
-            for(x in empHoursArray){
-
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
-
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-
-                //comprobamos si son horas "Extra"
-                let servFound=0;
-
-                for(z in servsArray){
-                    
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        servFound=1;
+        function extraHRS(){
+    
+            date1= new Date(ini); 
+            date2= new Date(end);
+    
+            valor=0;
+            totalExtraHRS= 0;
+    
+            html+= "<tr><td>Extra</td>";
+    
+            //vamos dia por dia
+            for (let i=0; i<= days_difference; i++){
+    
+                let gridDate= date1.setDate(date1.getDate()+valor);
+                let gridDateF= formatoFecha(gridDate,1);
+                let dato="";
+                let formHRS=0;
+                let idForm=0;
+                let formRefServ=1;
+                let isBH=0;
+                let payTypeServ="";
+                let catServ="";
+                let dateStart="";
+                let dateFinish="";
+                let formHrsAssignType=0;
+    
+                //es bankholiday?
+                for(x in BHArray){
+    
+                    if(gridDateF== BHArray[x].datebh){
+                        
+                        isBH=1;
                     }
                 }
-
-                //console.log("Service found "+servFound+ " times")
-
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && ignoreBecauseLastMonday==0){
-
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
-
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
-
-                    var diff = (dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
+    
+                for(x in empHoursArray){
+    
+                    let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                    let refServ= empHoursArray[x].formRefServ;
                     idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-
-                    formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
-                    
-                    switch(formHrsAssignType){
-
-                        case 0:
-                            //dato= diff;
-                            totalExtraHRS=totalExtraHRS + parseFloat(formHRS);
-
-                            let acumulado=0;
-
-                            if(acumuladorHRS[gridDateF]){
-
-                                acumulado = acumuladorHRS[gridDateF];
-                            }
-
-                            formHRS= formHRS + acumulado
-                            dato=formHRS.toFixed(2);
-
-                            acumuladorHRS[gridDateF]= formHRS;
-                            break;
-
-                        case 1:
-
-                            formHRS= parseFloat(empHoursArray[x].formHRS)
-                            dato=formHRS.toFixed(2);
-                            totalExtraHRS= formHRS;
-
-                            acumuladorHRS[gridDateF]= formHRS;
-
-                            forcedValueColor="#fc0303";
-                            break;
+    
+                    //comprobamos si son horas "Normal"
+                    let servFound=0;
+    
+                    for(z in servsArray){
+                        
+                        if(servsArray[z].refServ == refServ){
+                            payTypeServ= servsArray[z].payTypeServ;
+                            catServ= servsArray[z].catServ;
+                            servFound=1;
+                        }
                     }
+    
+                    servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
+    
+                    if(gridDateF== formLabDateStartF && payTypeServ=="Extra"){
+    
+                        dateStart= new Date(empHoursArray[x].formLabDateStart);
+                        dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    
+                        //Son horas asignadas por el usuario o por el GESAD?
+                        formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
+                        
+                        switch(formHrsAssignType){
+    
+                            case 0:
+    
+                                var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    
+                                formHRS= diff;
+    
+                                break;
+    
+                            case 1:
+    
+                                formHRS= parseFloat(empHoursArray[x].formHRS)
+    
+                                break;
+    
+                        }
+    
+                    }
+    
                 }
-
+    
+                totalExtraHRS= totalExtraHRS+parseFloat(formHRS);
+                formHRS== 0? "": dato=formHRS.toFixed(2);
                 
+                dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
+                dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
+    
+                html +="<td tipo=1 formLabDateStart="+gridDateF+
+                " hrsType=1"+
+                " idForm="+idForm+
+                " formRefServ="+formRefServ+
+                " formHRS="+formHRS+
+                " isBH="+isBH+
+                " dateStart="+dateStart+
+                " dateFinish="+dateFinish+
+                " formHrsAssignType="+formHrsAssignType+
+                " class='resaltarSiEditable'>"+dato+"</td>";
+                valor=1;
             }
-
-            dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
-            dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
-
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=1"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinish="+dateFinish+
-            " formHrsAssignType="+formHrsAssignType+
-            " style='color:"+forcedValueColor+"'>"+dato+"</td>";
-            valor=1;
+    
+            html +="<td id='totalExtraHRS'>"+totalExtraHRS.toFixed(2)+"</td><td></td><td></td></tr>";
+    
         }
-
-        html +="<td id='totalExtraHRS'>"+totalExtraHRS.toFixed(2)+"</td><td></td><td></td></tr>";
-
-    }
 
     //Duties Totals
     dutiesTotals();
@@ -686,7 +614,7 @@ function fillHoursTable(){
         html +="<td>Hrs</td><td>Rate</td><td>G.Total</td></tr>";
     }
 
-    //FR Hrs
+    //Extra FR
 
     FRHRS();
 
@@ -698,8 +626,6 @@ function fillHoursTable(){
         valor=0;
         totalExtraHRSFR= 0;
 
-        let acumuladorHRS=[];
-
         html+= "<tr><td>FR</td>";
 
         //vamos dia por dia
@@ -707,8 +633,6 @@ function fillHoursTable(){
 
             let gridDate= date1.setDate(date1.getDate()+valor);
             let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
             let dato="";
             let formHRS=0;
             let idForm=0;
@@ -718,8 +642,6 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
-            let startHour="";
-            let finishHour="";
             let formHrsAssignType=0;
 
             //es bankholiday?
@@ -735,11 +657,9 @@ function fillHoursTable(){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
+                idForm= empHoursArray[x].idForm;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-
-                //comprobamos si son horas "Extra"
+                //comprobamos si son horas "Normal"
                 let servFound=0;
 
                 for(z in servsArray){
@@ -751,56 +671,41 @@ function fillHoursTable(){
                     }
                 }
 
-                //console.log("Service found "+servFound+ " times")
+                servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && ignoreBecauseLastMonday==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR"){
 
-                    //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
-
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-
+                    //Son horas asignadas por el usuario o por el GESAD?
                     formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
                     
                     switch(formHrsAssignType){
 
                         case 0:
-                            //dato= diff;
-                            totalExtraHRSFR=totalExtraHRSFR+parseFloat(formHRS);
 
-                            let acumulado=0;
+                            var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                            if(acumuladorHRS[gridDateF]){
+                            formHRS= diff;
 
-                                acumulado = acumuladorHRS[gridDateF];
-                            }
-
-                            formHRS= formHRS + acumulado
-                            dato=formHRS.toFixed(2);
-
-                            acumuladorHRS[gridDateF]= formHRS;
                             break;
 
                         case 1:
 
                             formHRS= parseFloat(empHoursArray[x].formHRS)
-                            dato=formHRS.toFixed(2);
-                            totalExtraHRSFR= formHRS;
 
-                            acumuladorHRS[gridDateF]= formHRS;
                             break;
+
                     }
-                        
+
                 }
+
             }
 
+            totalExtraHRSFR= totalExtraHRSFR+parseFloat(formHRS);
+            formHRS== 0? "": dato=formHRS.toFixed(2);
+            
             dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
             dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
 
@@ -813,11 +718,9 @@ function fillHoursTable(){
             " dateStart="+dateStart+
             " dateFinish="+dateFinish+
             " formHrsAssignType="+formHrsAssignType+
-            ">"+dato+"</td>";
+            " class='resaltarSiEditable'>"+dato+"</td>";
             valor=1;
         }
-
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSFR+"</td><td></td><td></td></tr>";
 
         let totalAmountFR= parseFloat(hourlyRate);
         totalAmountFR= totalAmountFR.toFixed(2);
@@ -830,7 +733,7 @@ function fillHoursTable(){
 
     }
 
-    //OT time and a half Hrs
+    //OT TH HRS
 
     OTTHHRS();
 
@@ -842,8 +745,6 @@ function fillHoursTable(){
         valor=0;
         totalExtraHRSTH= 0;
 
-        let acumuladorHRS=[];
-
         html+= "<tr><td>@ 1½</td>";
 
         //vamos dia por dia
@@ -851,8 +752,6 @@ function fillHoursTable(){
 
             let gridDate= date1.setDate(date1.getDate()+valor);
             let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
             let dato="";
             let formHRS=0;
             let idForm=0;
@@ -862,8 +761,6 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
-            let startHour="";
-            let finishHour="";
             let formHrsAssignType=0;
 
             //es bankholiday?
@@ -876,16 +773,15 @@ function fillHoursTable(){
             }
 
             //es domingo??
-            let isSunday=formatoFecha(gridDate,2)
+            let isSunday= formatoFecha(gridDate,2)
 
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
                 let refServ= empHoursArray[x].formRefServ;
+                idForm= empHoursArray[x].idForm;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-                //comprobamos si son horas "Extra"
+                //comprobamos si son horas "Normal"
                 let servFound=0;
 
                 for(z in servsArray){
@@ -897,55 +793,41 @@ function fillHoursTable(){
                     }
                 }
 
-                //console.log("Service found "+servFound+ " times")
+                servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0 && ignoreBecauseLastMonday==0){
+                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && catServ=="OT" && isBH==0 && isSunday!=0){
 
-                    //Cálculo de horas
                     dateStart= new Date(empHoursArray[x].formLabDateStart);
                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
-                    
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
-
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-
+                    //Son horas asignadas por el usuario o por el GESAD?
                     formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
                     
                     switch(formHrsAssignType){
 
                         case 0:
-                            //dato= diff;
-                            totalExtraHRSTH=totalExtraHRSTH+parseFloat(formHRS);
 
-                            let acumulado=0;
+                            var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                            if(acumuladorHRS[gridDateF]){
+                            formHRS= diff;
 
-                                acumulado = acumuladorHRS[gridDateF];
-                            }
-
-                            formHRS= formHRS + acumulado
-                            dato=formHRS.toFixed(2);
-
-                            acumuladorHRS[gridDateF]= formHRS;
                             break;
 
                         case 1:
 
                             formHRS= parseFloat(empHoursArray[x].formHRS)
-                            dato=formHRS.toFixed(2);
-                            totalExtraHRSTH= formHRS;
 
-                            acumuladorHRS[gridDateF]= formHRS;
                             break;
+
                     }
+
                 }
+
             }
 
+            totalExtraHRSTH= totalExtraHRSTH+parseFloat(formHRS);
+            formHRS== 0? "": dato=formHRS.toFixed(2);
+            
             dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
             dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
 
@@ -958,11 +840,11 @@ function fillHoursTable(){
             " dateStart="+dateStart+
             " dateFinish="+dateFinish+
             " formHrsAssignType="+formHrsAssignType+
-            ">"+dato+"</td>";
+            " class='resaltarSiEditable'>"+dato+"</td>";
             valor=1;
         }
 
-        let totalAmountTH= 1.5 * hourlyRate;
+        let totalAmountTH= 1.5 * parseFloat(hourlyRate);
         totalAmountTH= totalAmountTH.toFixed(2);
         gTotalAmountTH= totalAmountTH * totalExtraHRSTH;
         gTotalAmountTH= gTotalAmountTH.toFixed(2);
@@ -985,8 +867,6 @@ function fillHoursTable(){
         valor=0;
         totalExtraHRSDT= 0;
 
-        let acumuladorHRS=[];
-
         html+= "<tr><td>@ 2</td>";
 
         //vamos dia por dia
@@ -994,8 +874,6 @@ function fillHoursTable(){
 
             let gridDate= date1.setDate(date1.getDate()+valor);
             let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
             let dato="";
             let formHRS=0;
             let idForm=0;
@@ -1005,8 +883,6 @@ function fillHoursTable(){
             let catServ="";
             let dateStart="";
             let dateFinish="";
-            let startHour="";
-            let finishHour="";
             let formHrsAssignType=0;
 
             //es bankholiday?
@@ -1019,17 +895,16 @@ function fillHoursTable(){
             }
 
             //es domingo??
-            let isSunday=formatoFecha(gridDate,2)
+            let isSunday= formatoFecha(gridDate,2)
 
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let formLabDateFinishF= formatoFecha(empHoursArray[x].formLabDateFinish,1);
                 let refServ= empHoursArray[x].formRefServ;
+                idForm= empHoursArray[x].idForm;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-
-                //comprobamos si son horas "Extra"
+                //comprobamos si son horas "Normal"
                 let servFound=0;
 
                 for(z in servsArray){
@@ -1041,89 +916,86 @@ function fillHoursTable(){
                     }
                 }
 
-                //console.log("Service found "+servFound+ " times")
+                servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1 && ignoreBecauseLastMonday==0){
+                //Empieza y termina el mismo dia su turno?
+                let startFinishSameDay= 0;
+                formLabDateStartF != formLabDateFinishF? startFinishSameDay= 1:"";
 
-                    //Cálculo de horas
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                //Si empieza y termina el mismo dia
+                if(formLabDateStartF==0){
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+                    if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1 ){
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                        dateStart= new Date(empHoursArray[x].formLabDateStart);
+                        dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
+                        //Son horas asignadas por el usuario o por el GESAD?
+                        formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
+                        
+                        switch(formHrsAssignType){
 
-                    formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
-                    
-                    switch(formHrsAssignType){
+                            case 0:
 
-                        case 0:
-                            //dato= diff;
-                            totalExtraHRSDT=totalExtraHRSDT+parseFloat(formHRS);
+                                var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                            let acumulado=0;
+                                formHRS= diff;
 
-                            if(acumuladorHRS[gridDateF]){
+                                break;
 
-                                acumulado = acumuladorHRS[gridDateF];
-                            }
+                            case 1:
 
-                            formHRS= formHRS + acumulado
-                            dato=formHRS.toFixed(2);
+                                formHRS= parseFloat(empHoursArray[x].formHRS)
 
-                            acumuladorHRS[gridDateF]= formHRS;
-                            break;
+                                break;
 
-                        case 1:
+                        }
 
-                            formHRS= parseFloat(empHoursArray[x].formHRS)
-                            dato=formHRS.toFixed(2);
-                            totalExtraHRSDT= formHRS;
+                    }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0 ){
 
-                            acumuladorHRS[gridDateF]= formHRS;
-                            break;
+                        dateStart= new Date(empHoursArray[x].formLabDateStart);
+                        dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+
+                        //Son horas asignadas por el usuario o por el GESAD?
+                        formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
+                        
+                        switch(formHrsAssignType){
+
+                            case 0:
+
+                                var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                                formHRS= diff;
+
+                                break;
+
+                            case 1:
+
+                                formHRS= parseFloat(empHoursArray[x].formHRS)
+
+                                break;
+
+                        }
+
                     }
+                }
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isSunday==0 && ignoreBecauseLastMonday==0){
+                //Si empieza un dia y termina otro
+                if(formLabDateStartF==1){
 
-                     //Cálculo de horas
-                     dateStart= new Date(empHoursArray[x].formLabDateStart);
-                     dateFinish= new Date(empHoursArray[x].formLabDateFinish);
-
-                     startHour= dateStart.getHours();
-                     finishHour= dateFinish.getHours();
-
-                     var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
- 
-                     idForm= empHoursArray[x].idForm;
-                     formHRS= diff;
-                     //dato= diff;
-                     totalExtraHRSDT=totalExtraHRSDT+parseFloat(formHRS);
- 
-                     let acumulado=0;
- 
-                     if(acumuladorHRS[gridDateF]){
- 
-                         acumulado = acumuladorHRS[gridDateF];
-                     }
- 
-                     formHRS= formHRS + acumulado
-                     dato=formHRS.toFixed(2);
- 
-                     acumuladorHRS[gridDateF]= formHRS;
 
                 }
+
             }
 
+            totalExtraHRSDT= totalExtraHRSDT+parseFloat(formHRS);
+            formHRS== 0? "": dato=formHRS.toFixed(2);
+            
             dateStart? dateStart="'"+formatoFecha(dateStart,8)+"'":"";
             dateFinish? dateFinish="'"+formatoFecha(dateFinish,8)+"'":"";
 
             html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=4"+
+            " hrsType=5"+
             " idForm="+idForm+
             " formRefServ="+formRefServ+
             " formHRS="+formHRS+
@@ -1131,20 +1003,18 @@ function fillHoursTable(){
             " dateStart="+dateStart+
             " dateFinish="+dateFinish+
             " formHrsAssignType="+formHrsAssignType+
-            ">"+dato+"</td>";
+            " class='resaltarSiEditable'>"+dato+"</td>";
             valor=1;
         }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
-
-        let totalAmountDT= 2 * hourlyRate;
+        let totalAmountDT= 2 * parseFloat(hourlyRate);
         totalAmountDT= totalAmountDT.toFixed(2);
         gTotalAmountDT= totalAmountDT * totalExtraHRSDT;
         gTotalAmountDT= gTotalAmountDT.toFixed(2);
 
         html +="<td id='totalExtraHRSDT'>"+totalExtraHRSDT.toFixed(2)+
-        "</td><td id='totalAmountDT'>"+totalAmountDT+
-        "</td><td id='gTotalAmountDT'>"+gTotalAmountDT+"</td></tr>";
+        "</td><td id='totalAmountTH'>"+totalAmountDT+
+        "</td><td id='gTotalAmountTH'>"+gTotalAmountDT+"</td></tr>";
 
     }
 
@@ -1199,1116 +1069,1118 @@ function fillHoursTable(){
     }
 
 
-    //@Sat 33%
 
-    sat();
 
-    function sat(){
+    // //@Sat 33%
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    // sat();
 
-        valor=0;
-        totalSat= 0;
+    // function sat(){
 
-        let acumuladorHRS=[];
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        html+= "<tr><td>Sat @ 33%</td>";
+    //     valor=0;
+    //     totalSat= 0;
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     let acumuladorHRS=[];
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //     html+= "<tr><td>Sat @ 33%</td>";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-                if(gridDateF== BHArray[x].datebh){
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
+
+    //         //es bankholiday?
+    //         for(x in BHArray){
+
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Sabado??
-            let isSaturday=formatoFecha(gridDate,2)
+    //         //es Sabado??
+    //         let isSaturday=formatoFecha(gridDate,2)
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
 
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
-                //console.log("Service found "+servFound+ " times")
+    //             //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6 && ignoreBecauseLastMonday==0){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSaturday==6 && ignoreBecauseLastMonday==0){
 
-                    //Cálculo de horas
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //                 //Cálculo de horas
+    //                 dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //                 dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+    //                 startHour= dateStart.getHours();
+    //                 finishHour= dateFinish.getHours();
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    //                 var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-                    //dato= diff;
-                    totalSat=totalSat+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= diff;
+    //                 //dato= diff;
+    //                 totalSat=totalSat+parseFloat(formHRS);
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSaturday==6 && ignoreBecauseLastMonday==0){
 
-                    //Cálculo de horas
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //                 //Cálculo de horas
+    //                 dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //                 dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+    //                 startHour= dateStart.getHours();
+    //                 finishHour= dateFinish.getHours();
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    //                 var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-                    //dato= diff;
-                    totalSat=totalSat+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= diff;
+    //                 //dato= diff;
+    //                 totalSat=totalSat+parseFloat(formHRS);
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=5"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=5"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+    //     //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSat= 0.33 * hourlyRate;
-        totalAmountSat= totalAmountSat.toFixed(2);
-        gTotalAmountSat= totalAmountSat * totalSat;
-        gTotalAmountSat= gTotalAmountSat.toFixed(2);
+    //     let totalAmountSat= 0.33 * hourlyRate;
+    //     totalAmountSat= totalAmountSat.toFixed(2);
+    //     gTotalAmountSat= totalAmountSat * totalSat;
+    //     gTotalAmountSat= gTotalAmountSat.toFixed(2);
 
-        html +="<td id='totalSat'>"+totalSat.toFixed(2)+
-        "</td><td id='totalAmountSat'>"+totalAmountSat+
-        "</td><td id='gTotalAmountSat'>"+gTotalAmountSat+"</td></tr>";
+    //     html +="<td id='totalSat'>"+totalSat.toFixed(2)+
+    //     "</td><td id='totalAmountSat'>"+totalAmountSat+
+    //     "</td><td id='gTotalAmountSat'>"+gTotalAmountSat+"</td></tr>";
 
-    }
+    // }
 
-    //@Sun 66%
+    // //@Sun 66%
 
-    sun();
+    // sun();
 
-    function sun(){
+    // function sun(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
-        totalSun= 0;
+    //     valor=0;
+    //     totalSun= 0;
 
-        let acumuladorHRS=[];
+    //     let acumuladorHRS=[];
 
-        html+= "<tr><td>Sun @ 66%</td>";
+    //     html+= "<tr><td>Sun @ 66%</td>";
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //         //es bankholiday?
+    //         for(x in BHArray){
 
-                if(gridDateF== BHArray[x].datebh){
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Domingo??
-            let isSunday=formatoFecha(gridDate,2)
+    //         //es Domingo??
+    //         let isSunday=formatoFecha(gridDate,2)
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
 
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
-                //console.log("Service found "+servFound+ " times")
+    //             //console.log("Service found "+servFound+ " times")
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0 && ignoreBecauseLastMonday==0){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isSunday==0 && ignoreBecauseLastMonday==0){
 
-                    //Cálculo de horas
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //                 //Cálculo de horas
+    //                 dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //                 dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+    //                 startHour= dateStart.getHours();
+    //                 finishHour= dateFinish.getHours();
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    //                 var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-                    //dato= diff;
-                    totalSun=totalSun+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= diff;
+    //                 //dato= diff;
+    //                 totalSun=totalSun+parseFloat(formHRS);
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isSunday==0 && ignoreBecauseLastMonday==0){
 
-                    //Cálculo de horas
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //                 //Cálculo de horas
+    //                 dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //                 dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                    startHour= dateStart.getHours();
-                    finishHour= dateFinish.getHours();
+    //                 startHour= dateStart.getHours();
+    //                 finishHour= dateFinish.getHours();
 
-                    var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    //                 var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= diff;
-                    //dato= diff;
-                    totalSat=totalSat+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= diff;
+    //                 //dato= diff;
+    //                 totalSat=totalSat+parseFloat(formHRS);
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=6"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=6"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+    //     //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSun= 0.66 * hourlyRate;
-        totalAmountSun= totalAmountSun.toFixed(2);
-        gTotalAmountSun= totalAmountSun * totalSun;
-        gTotalAmountSun= gTotalAmountSun.toFixed(2);
+    //     let totalAmountSun= 0.66 * hourlyRate;
+    //     totalAmountSun= totalAmountSun.toFixed(2);
+    //     gTotalAmountSun= totalAmountSun * totalSun;
+    //     gTotalAmountSun= gTotalAmountSun.toFixed(2);
 
-        html +="<td id='totalSun'>"+totalSun.toFixed(2)+
-        "</td><td id='totalAmountSun'>"+totalAmountSun+
-        "</td><td id='gTotalAmountSun'>"+gTotalAmountSun+"</td></tr>";
+    //     html +="<td id='totalSun'>"+totalSun.toFixed(2)+
+    //     "</td><td id='totalAmountSun'>"+totalAmountSun+
+    //     "</td><td id='gTotalAmountSun'>"+gTotalAmountSun+"</td></tr>";
 
-    }
+    // }
 
-    //@NR 33%
+    // //@NR 33%
 
-    nr();
+    // nr();
 
-    function nr(){
+    // function nr(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
-        totalSat= 0;
+    //     valor=0;
+    //     totalSat= 0;
 
-        let acumuladorHRS=[];
+    //     let acumuladorHRS=[];
 
-        html+= "<tr><td>NR @ 33%</td>";
+    //     html+= "<tr><td>NR @ 33%</td>";
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //         //es bankholiday?
+    //         for(x in BHArray){
 
-                if(gridDateF== BHArray[x].datebh){
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Domingo??
-            let isSunday=formatoFecha(gridDate,2)
+    //         //es Domingo??
+    //         let isSunday=formatoFecha(gridDate,2)
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
 
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
-                //Cálculo de horas
-                dateStart= new Date(empHoursArray[x].formLabDateStart);
-                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
-                //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+    //             //Cálculo de horas
+    //             dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //             dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //             //var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                startHour= dateStart.getHours();
-                finishHour= dateFinish.getHours();
+    //             startHour= dateStart.getHours();
+    //             finishHour= dateFinish.getHours();
 
-                //Contamos las horas nocturnas (de 20h a 8h)
+    //             //Contamos las horas nocturnas (de 20h a 8h)
 
-                let NRHours=0;
+    //             let NRHours=0;
 
-                //console.log(dateStart)
-                NRHours= hrsInRange('night', dateStart, dateFinish);
+    //             //console.log(dateStart)
+    //             NRHours= hrsInRange('night', dateStart, dateFinish);
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0 && ignoreBecauseLastMonday==0){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && NRHours>0 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= NRHours;
-                    //dato= diff;
-                    totalNR=totalNR+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= NRHours;
+    //                 //dato= diff;
+    //                 totalNR=totalNR+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -night/Normal: "+ formHRS)
+    //                 console.log(gridDateF + " -night/Normal: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
+    //                 formHRS= formHRS + acumulado
                     
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && NRHours>0 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && NRHours>0 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= NRHours;
-                    //dato= diff;
-                    totalNR=totalNR+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= NRHours;
+    //                 //dato= diff;
+    //                 totalNR=totalNR+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -night/FR: "+ formHRS)
+    //                 console.log(gridDateF + " -night/FR: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=7"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=7"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+    //     //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountNR= 0.33 * hourlyRate;
-        totalAmountNR= totalAmountNR.toFixed(2);
-        gTotalAmountNR= totalAmountNR * totalNR;
-        gTotalAmountNR= gTotalAmountNR.toFixed(2);
+    //     let totalAmountNR= 0.33 * hourlyRate;
+    //     totalAmountNR= totalAmountNR.toFixed(2);
+    //     gTotalAmountNR= totalAmountNR * totalNR;
+    //     gTotalAmountNR= gTotalAmountNR.toFixed(2);
 
-        html +="<td id='totalNR'>"+totalNR.toFixed(2)+
-        "</td><td id='totalAmountNR'>"+totalAmountNR+
-        "</td><td id='gTotalAmountNR'>"+gTotalAmountNR+"</td></tr>";
+    //     html +="<td id='totalNR'>"+totalNR.toFixed(2)+
+    //     "</td><td id='totalAmountNR'>"+totalAmountNR+
+    //     "</td><td id='gTotalAmountNR'>"+gTotalAmountNR+"</td></tr>";
 
-    }
+    // }
 
-    //Allowances Total
-    allowancesTotal();
+    // //Allowances Total
+    // allowancesTotal();
 
-    function allowancesTotal(){
+    // function allowancesTotal(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        let dayBColor="#e0e0e0";
+    //     let dayBColor="#e0e0e0";
 
-        html+= "<tr><td></td>";
+    //     html+= "<tr><td></td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
 
-        gAllowancesTotal= parseFloat(gTotalAmountSat) + parseFloat(gTotalAmountSun) + parseFloat(gTotalAmountNR);
-        gAllowancesTotal= gAllowancesTotal.toFixed(2);
+    //     gAllowancesTotal= parseFloat(gTotalAmountSat) + parseFloat(gTotalAmountSun) + parseFloat(gTotalAmountNR);
+    //     gAllowancesTotal= gAllowancesTotal.toFixed(2);
 
-        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gAllowancesTotal'>"+gAllowancesTotal+"</td></tr>";
-    }
+    //     html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gAllowancesTotal'>"+gAllowancesTotal+"</td></tr>";
+    // }
 
-    //@SDA 5%
+    // //@SDA 5%
 
-    sda();
+    // sda();
 
-    function sda(){
+    // function sda(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
-        totalSDA= 0;
+    //     valor=0;
+    //     totalSDA= 0;
 
-        let acumuladorHRS=[];
+    //     let acumuladorHRS=[];
 
-        html+= "<tr><td>SDA @ 5%</td>";
+    //     html+= "<tr><td>SDA @ 5%</td>";
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //         //es bankholiday?
+    //         for(x in BHArray){
 
-                if(gridDateF== BHArray[x].datebh){
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Domingo??
-            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+    //         //es Domingo??
+    //         let dayOfTheWeekNumber= formatoFecha(gridDate,2)
 
-            let isWeekEnd= 0;
+    //         let isWeekEnd= 0;
 
-            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+    //         if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
 
-                isWeekEnd= 1;
-            }
+    //             isWeekEnd= 1;
+    //         }
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
 
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
-                //Cálculo de horas
-                dateStart= new Date(empHoursArray[x].formLabDateStart);
-                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //             //Cálculo de horas
+    //             dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //             dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                startHour= dateStart.getHours();
-                finishHour= dateFinish.getHours();
+    //             startHour= dateStart.getHours();
+    //             finishHour= dateFinish.getHours();
 
-                //Contamos las horas nocturnas (de 20h a 8h)
+    //             //Contamos las horas nocturnas (de 20h a 8h)
 
-                let SDAHours=0;
+    //             let SDAHours=0;
 
-                SDAHours= hrsInRange('day', dateStart, dateFinish);
+    //             SDAHours= hrsInRange('day', dateStart, dateFinish);
 
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
-                    //dato= diff;
-                    totalSDA=totalSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= SDAHours;
+    //                 //dato= diff;
+    //                 totalSDA=totalSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/Normal: "+ formHRS)
+    //                 console.log(gridDateF + " -day/Normal: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==0 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= SDAHours;
-                    //dato= diff;
-                    totalSDA=totalSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= SDAHours;
+    //                 //dato= diff;
+    //                 totalSDA=totalSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/FR: "+ formHRS)
+    //                 console.log(gridDateF + " -day/FR: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
-                    //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
-                    dato=formHRS.toFixed(2);
+    //                 formHRS= formHRS + acumulado
+    //                 //console.log(gridDateF + " "+ formHRS + " "+ acumulado + " " + pasa)
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=8"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=8"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+    //     //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountSDA= 0.05 * hourlyRate;
-        totalAmountSDA= totalAmountSDA.toFixed(2);
-        gTotalAmountSDA= totalAmountSDA * totalSDA;
-        gTotalAmountSDA= gTotalAmountSDA.toFixed(2);
+    //     let totalAmountSDA= 0.05 * hourlyRate;
+    //     totalAmountSDA= totalAmountSDA.toFixed(2);
+    //     gTotalAmountSDA= totalAmountSDA * totalSDA;
+    //     gTotalAmountSDA= gTotalAmountSDA.toFixed(2);
 
-        html +="<td id='totalSDA'>"+totalSDA.toFixed(2)+
-        "</td><td id='totalAmountSDA'>"+totalAmountSDA+
-        "</td><td id='gTotalAmountSDA'>"+gTotalAmountSDA+"</td></tr>";
+    //     html +="<td id='totalSDA'>"+totalSDA.toFixed(2)+
+    //     "</td><td id='totalAmountSDA'>"+totalAmountSDA+
+    //     "</td><td id='gTotalAmountSDA'>"+gTotalAmountSDA+"</td></tr>";
 
-    }
+    // }
 
-    //@OT SDA 5%
+    // //@OT SDA 5%
 
-    otsda();
+    // otsda();
 
-    function otsda(){
+    // function otsda(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
-        totalOTSDA= 0;
+    //     valor=0;
+    //     totalOTSDA= 0;
 
-        let acumuladorHRS=[];
+    //     let acumuladorHRS=[];
 
-        html+= "<tr><td>OT SDA @ 5%</td>";
+    //     html+= "<tr><td>OT SDA @ 5%</td>";
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //         //es bankholiday?
+    //         for(x in BHArray){
 
-                if(gridDateF== BHArray[x].datebh){
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Domingo??
-            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+    //         //es Domingo??
+    //         let dayOfTheWeekNumber= formatoFecha(gridDate,2)
 
-            let isWeekEnd= 0;
+    //         let isWeekEnd= 0;
 
-            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+    //         if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
 
-                isWeekEnd= 1;
-            }
+    //             isWeekEnd= 1;
+    //         }
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
-                //Cálculo de horas
-                dateStart= new Date(empHoursArray[x].formLabDateStart);
-                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //             //Cálculo de horas
+    //             dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //             dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                startHour= dateStart.getHours();
-                finishHour= dateFinish.getHours();
+    //             startHour= dateStart.getHours();
+    //             finishHour= dateFinish.getHours();
 
-                //Contamos las horas nocturnas (de 20h a 8h)
+    //             //Contamos las horas nocturnas (de 20h a 8h)
 
-                let OTSDAHours=0;
+    //             let OTSDAHours=0;
 
-                OTSDAHours= hrsInRange('day', dateStart, dateFinish);
+    //             OTSDAHours= hrsInRange('day', dateStart, dateFinish);
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1 && ignoreBecauseLastMonday==0 ){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isWeekEnd==1 && ignoreBecauseLastMonday==0 ){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= OTSDAHours;
-                    //dato= diff;
-                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= OTSDAHours;
+    //                 //dato= diff;
+    //                 totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/Normal/WeekEnd: "+ formHRS)
+    //                 console.log(gridDateF + " -day/Normal/WeekEnd: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
+    //                 formHRS= formHRS + acumulado
  
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isBH==1 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Normal" && isBH==1 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= OTSDAHours;
-                    //dato= diff;
-                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= OTSDAHours;
+    //                 //dato= diff;
+    //                 totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/Normal/BankH: "+ formHRS)
+    //                 console.log(gridDateF + " -day/Normal/BankH: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
+    //                 formHRS= formHRS + acumulado
  
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isWeekEnd==1 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= OTSDAHours;
-                    //dato= diff;
-                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= OTSDAHours;
+    //                 //dato= diff;
+    //                 totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/FR/WeekEnd: "+ formHRS)
+    //                 console.log(gridDateF + " -day/FR/WeekEnd: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
+    //                 formHRS= formHRS + acumulado
 
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isBH==1 && ignoreBecauseLastMonday==0){
+    //             }else if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && isBH==1 && ignoreBecauseLastMonday==0){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= OTSDAHours;
-                    //dato= diff;
-                    totalOTSDA=totalOTSDA+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= OTSDAHours;
+    //                 //dato= diff;
+    //                 totalOTSDA=totalOTSDA+parseFloat(formHRS);
 
-                    console.log(gridDateF + " -day/FR/BankH: "+ formHRS)
+    //                 console.log(gridDateF + " -day/FR/BankH: "+ formHRS)
 
-                    let acumulado=0;
+    //                 let acumulado=0;
 
-                    //revisamos si ya habia horas ese dia
-                    if(acumuladorHRS[gridDateF]){
+    //                 //revisamos si ya habia horas ese dia
+    //                 if(acumuladorHRS[gridDateF]){
 
-                        acumulado = acumuladorHRS[gridDateF];
-                    }
+    //                     acumulado = acumuladorHRS[gridDateF];
+    //                 }
 
-                    formHRS= formHRS + acumulado
+    //                 formHRS= formHRS + acumulado
 
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                    acumuladorHRS[gridDateF]= formHRS;
+    //                 acumuladorHRS[gridDateF]= formHRS;
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=9"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=9"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
+    //     //html +="<td id='totalExtraHRSFR'>"+totalExtraHRSDT+"</td><td></td><td></td></tr>";
 
-        let totalAmountOTSDA= 0.05 * hourlyRate;
-        totalAmountOTSDA= totalAmountOTSDA.toFixed(2);
-        gTotalAmountOTSDA= totalAmountOTSDA * totalOTSDA;
-        gTotalAmountOTSDA= gTotalAmountOTSDA.toFixed(2);
+    //     let totalAmountOTSDA= 0.05 * hourlyRate;
+    //     totalAmountOTSDA= totalAmountOTSDA.toFixed(2);
+    //     gTotalAmountOTSDA= totalAmountOTSDA * totalOTSDA;
+    //     gTotalAmountOTSDA= gTotalAmountOTSDA.toFixed(2);
 
-        html +="<td id='totalOTSDA'>"+totalOTSDA.toFixed(2)+
-        "</td><td id='totalAmountOTSDA'>"+totalAmountOTSDA+
-        "</td><td id='gTotalAmountOTSDA'>"+gTotalAmountOTSDA+"</td></tr>";
+    //     html +="<td id='totalOTSDA'>"+totalOTSDA.toFixed(2)+
+    //     "</td><td id='totalAmountOTSDA'>"+totalAmountOTSDA+
+    //     "</td><td id='gTotalAmountOTSDA'>"+gTotalAmountOTSDA+"</td></tr>";
 
-    }
+    // }
 
-    //SDA OTSDA Totals Total
-    SDAOTSDATotals();
+    // //SDA OTSDA Totals Total
+    // SDAOTSDATotals();
 
-    function SDAOTSDATotals(){
+    // function SDAOTSDATotals(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        let dayBColor="#e0e0e0";
+    //     let dayBColor="#e0e0e0";
 
-        html+= "<tr><td></td>";
+    //     html+= "<tr><td></td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
 
-        gSDAOTSDATotals= parseFloat(gTotalAmountSDA) + parseFloat(gTotalAmountOTSDA) ;
-        gSDAOTSDATotals= gSDAOTSDATotals.toFixed(2);
+    //     gSDAOTSDATotals= parseFloat(gTotalAmountSDA) + parseFloat(gTotalAmountOTSDA) ;
+    //     gSDAOTSDATotals= gSDAOTSDATotals.toFixed(2);
 
-        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gSDAOTSDATotals'>"+gSDAOTSDATotals+"</td></tr>";
-    }
+    //     html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG' id='gSDAOTSDATotals'>"+gSDAOTSDATotals+"</td></tr>";
+    // }
 
-    //SL header
-    SLHeader();
+    // //SL header
+    // SLHeader();
 
-    function SLHeader(){
+    // function SLHeader(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        html+= "<tr><td></td>";
+    //     html+= "<tr><td></td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
-        html +="<td id='totalSLInd'>"+totalSLInd+"</td><td></td><td>SL</td></tr>";
-    }
+    //     html +="<td id='totalSLInd'>"+totalSLInd+"</td><td></td><td>SL</td></tr>";
+    // }
 
 
-    //Total Hrs
-    totalHrsRow();
+    // //Total Hrs
+    // totalHrsRow();
 
-    function totalHrsRow(){
+    // function totalHrsRow(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        totalHrsSum= totalSLInd + totalSDA + totalNR + totalSun + totalSat - totalExtraHRSFR;
-        valor=0;
+    //     totalHrsSum= totalSLInd + totalSDA + totalNR + totalSun + totalSat - totalExtraHRSFR;
+    //     valor=0;
 
-        html+= "<tr><td>TOTAL HOURS</td>";
+    //     html+= "<tr><td>TOTAL HOURS</td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
-        html +="<td id='totalHrsSum'>"+totalHrsSum+"</td><td></td><td>Total Hours</td></tr>";
-    }
+    //     html +="<td id='totalHrsSum'>"+totalHrsSum+"</td><td></td><td>Total Hours</td></tr>";
+    // }
 
-    //@ SL
+    // //@ SL
 
-    SL();
+    // SL();
 
-    function SL(){
+    // function SL(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
-        totalSL= 0;
+    //     valor=0;
+    //     totalSL= 0;
 
-        let acumuladorHRS=[];
+    //     let acumuladorHRS=[];
 
-        html+= "<tr><td>SI</td>";
+    //     html+= "<tr><td>SI</td>";
 
-        //vamos dia por dia
-        for (let i=0; i<= days_difference; i++){
+    //     //vamos dia por dia
+    //     for (let i=0; i<= days_difference; i++){
 
-            let gridDate= date1.setDate(date1.getDate()+valor);
-            let gridDateF= formatoFecha(gridDate,1);
-            //let gridDateNo= formatoFecha(gridDate,5);
-            //let gridWeekDayName= formatoFecha(gridDate,6);
-            let dato="";
-            let formHRS=0;
-            let idForm=0;
-            let formRefServ=1;
-            let isBH=0;
-            let payTypeServ="";
-            let catServ="";
-            let dateStart="";
-            let dateFinish="";
-            let startHour="";
-            let finishHour="";
+    //         let gridDate= date1.setDate(date1.getDate()+valor);
+    //         let gridDateF= formatoFecha(gridDate,1);
+    //         //let gridDateNo= formatoFecha(gridDate,5);
+    //         //let gridWeekDayName= formatoFecha(gridDate,6);
+    //         let dato="";
+    //         let formHRS=0;
+    //         let idForm=0;
+    //         let formRefServ=1;
+    //         let isBH=0;
+    //         let payTypeServ="";
+    //         let catServ="";
+    //         let dateStart="";
+    //         let dateFinish="";
+    //         let startHour="";
+    //         let finishHour="";
 
-            //es bankholiday?
-            for(x in BHArray){
+    //         //es bankholiday?
+    //         for(x in BHArray){
 
-                if(gridDateF== BHArray[x].datebh){
+    //             if(gridDateF== BHArray[x].datebh){
                     
-                    isBH=1;
-                }
-            }
+    //                 isBH=1;
+    //             }
+    //         }
 
-            //es Domingo??
-            let dayOfTheWeekNumber= formatoFecha(gridDate,2)
+    //         //es Domingo??
+    //         let dayOfTheWeekNumber= formatoFecha(gridDate,2)
 
-            let isWeekEnd= 0;
+    //         let isWeekEnd= 0;
 
-            if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
+    //         if(dayOfTheWeekNumber==0 || dayOfTheWeekNumber==6){
 
-                isWeekEnd= 1;
-            }
+    //             isWeekEnd= 1;
+    //         }
 
-            for(x in empHoursArray){
+    //         for(x in empHoursArray){
 
-                //Cálculo de horas
-                dateStart= new Date(empHoursArray[x].formLabDateStart);
-                dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+    //             //Cálculo de horas
+    //             dateStart= new Date(empHoursArray[x].formLabDateStart);
+    //             dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
-                let refServ= empHoursArray[x].formRefServ;
+    //             let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+    //             let refServ= empHoursArray[x].formRefServ;
 
-                let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
-                ignoreBecauseLastMonday= lastMondayToProcess;
-                //comprobamos si son horas "Extra"
-                let servFound=0;
+    //             let lastMondayToProcess= lastMondayCheck(gridDateF, empHoursArray[x].formLabDateStart)
+    //             ignoreBecauseLastMonday= lastMondayToProcess;
+    //             //comprobamos si son horas "Extra"
+    //             let servFound=0;
 
-                for(z in servsArray){
+    //             for(z in servsArray){
                     
-                    if(servsArray[z].refServ == refServ){
-                        payTypeServ= servsArray[z].payTypeServ;
-                        catServ= servsArray[z].catServ;
-                        servFound=1;
-                    }
-                }
+    //                 if(servsArray[z].refServ == refServ){
+    //                     payTypeServ= servsArray[z].payTypeServ;
+    //                     catServ= servsArray[z].catServ;
+    //                     servFound=1;
+    //                 }
+    //             }
 
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="SL"){
+    //             if(gridDateF== formLabDateStartF && payTypeServ=="SL"){
 
-                    idForm= empHoursArray[x].idForm;
-                    formHRS= 1;
-                    //dato= diff;
-                    totalSL=totalSL+parseFloat(formHRS);
+    //                 idForm= empHoursArray[x].idForm;
+    //                 formHRS= 1;
+    //                 //dato= diff;
+    //                 totalSL=totalSL+parseFloat(formHRS);
 
-                    console.log(gridDateF + " SL: "+ formHRS)
+    //                 console.log(gridDateF + " SL: "+ formHRS)
  
-                    dato=formHRS.toFixed(2);
+    //                 dato=formHRS.toFixed(2);
 
-                }
-            }
+    //             }
+    //         }
 
-            html +="<td tipo=1 formLabDateStart="+gridDateF+
-            " hrsType=10"+
-            " idForm="+idForm+
-            " formRefServ="+formRefServ+
-            " formHRS="+formHRS+
-            " isBH="+isBH+
-            " dateStart="+dateStart+
-            " dateFinih="+dateFinish+
-            ">"+dato+"</td>";
-            valor=1;
-        }
+    //         html +="<td tipo=1 formLabDateStart="+gridDateF+
+    //         " hrsType=10"+
+    //         " idForm="+idForm+
+    //         " formRefServ="+formRefServ+
+    //         " formHRS="+formHRS+
+    //         " isBH="+isBH+
+    //         " dateStart="+dateStart+
+    //         " dateFinih="+dateFinish+
+    //         ">"+dato+"</td>";
+    //         valor=1;
+    //     }
 
-        //console.log(totalSL)
-        let totalAmountSL= 30 ;
-        totalAmountSL= totalAmountSL.toFixed(2);
-        gTotalAmountSL= totalAmountSL * totalSL;
-        gTotalAmountSL= gTotalAmountSL.toFixed(2);
+    //     //console.log(totalSL)
+    //     let totalAmountSL= 30 ;
+    //     totalAmountSL= totalAmountSL.toFixed(2);
+    //     gTotalAmountSL= totalAmountSL * totalSL;
+    //     gTotalAmountSL= gTotalAmountSL.toFixed(2);
 
-        html +="<td id='totalSL'>"+totalSL.toFixed(2)+
-        "</td><td id='totalAmountSL'>"+30+
-        "</td><td id='gTotalAmountSL'>"+gTotalAmountSL+"</td></tr>";
+    //     html +="<td id='totalSL'>"+totalSL.toFixed(2)+
+    //     "</td><td id='totalAmountSL'>"+30+
+    //     "</td><td id='gTotalAmountSL'>"+gTotalAmountSL+"</td></tr>";
 
-    }
+    // }
 
-    //SUBST1
-    SUBST1();
+    // //SUBST1
+    // SUBST1();
 
-    function SUBST1(){
+    // function SUBST1(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        html+= "<tr><td>SUBST</td>";
+    //     html+= "<tr><td>SUBST</td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
-        html +="<td>0</td><td></td><td></td></tr>";
-    }
+    //     html +="<td>0</td><td></td><td></td></tr>";
+    // }
 
-    //SUBST2
-    SUBST2();
+    // //SUBST2
+    // SUBST2();
 
-    function SUBST2(){
+    // function SUBST2(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        html+= "<tr><td>SUBST</td>";
+    //     html+= "<tr><td>SUBST</td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
-        html +="<td>0</td><td></td><td></td></tr>";
-    }
+    //     html +="<td>0</td><td></td><td></td></tr>";
+    // }
 
-    //Total SL
-    totalSLAmountFn();
+    // //Total SL
+    // totalSLAmountFn();
 
-    function totalSLAmountFn(){
+    // function totalSLAmountFn(){
 
-        date1= new Date(ini); 
-        date2= new Date(end);
+    //     date1= new Date(ini); 
+    //     date2= new Date(end);
 
-        valor=0;
+    //     valor=0;
 
-        html+= "<tr><td></td>";
+    //     html+= "<tr><td></td>";
 
-        for (let i=0; i<= days_difference; i++){
+    //     for (let i=0; i<= days_difference; i++){
 
-            html +="<td tipo=0></td>";
-            valor=1;
-        }
+    //         html +="<td tipo=0></td>";
+    //         valor=1;
+    //     }
 
-        html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG'>"+gTotalAmountSL+"</td></tr>";
-    }
+    //     html +="<td class='boldStyle orangeBG'>Total</td><td class='boldStyle orangeBG'></td><td class='boldStyle orangeBG'>"+gTotalAmountSL+"</td></tr>";
+    // }
 
     hoursTable.innerHTML= html;
 

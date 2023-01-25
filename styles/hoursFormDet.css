@@ -130,13 +130,13 @@
     transition: background-color 0.2s;
 }
 
-#hoursTable td:hover{
+/* #hoursTable td:hover{
 
     background-color: #7d7d7d;
     cursor: pointer;
     color: #fff;
     
-}
+} */
 
 #hrsEditDiv{
 
@@ -208,6 +208,14 @@ input[type=number] {
 .buttonGreen{
 
     color: #12751a;
+}
+
+.resaltarSiEditable:hover{
+
+    background-color: #7d7d7d;
+    cursor: pointer;
+    color: #fff;
+
 }
 
 
