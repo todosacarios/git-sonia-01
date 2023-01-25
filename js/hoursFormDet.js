@@ -778,6 +778,7 @@ function fillHoursTable(){
             for(x in empHoursArray){
 
                 let formLabDateStartF= formatoFecha(empHoursArray[x].formLabDateStart,1);
+                let formLabDateFinishF= formatoFecha(empHoursArray[x].formLabDateFinish,1);
                 let refServ= empHoursArray[x].formRefServ;
                 idForm= empHoursArray[x].idForm;
 
@@ -795,33 +796,84 @@ function fillHoursTable(){
 
                 servFound==0? console.log("Service "+refServ+ " for " +formLabDateStartF+ " not found"):"";
 
-                if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="FR" && catServ=="OT" && isBH==0 && isSunday!=0){
+                //Empieza y termina el mismo dia su turno?
+                let startFinishSameDay= 0;
+                formLabDateStartF != formLabDateFinishF? startFinishSameDay= 1:"";
+                startFinishSameDay=parseInt(startFinishSameDay);
 
-                    dateStart= new Date(empHoursArray[x].formLabDateStart);
-                    dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                console.log(formLabDateStartF +" --"+ startFinishSameDay)
 
-                    //Son horas asignadas por el usuario o por el GESAD?
-                    formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
-                    
-                    switch(formHrsAssignType){
+                //Si empieza y termina el mismo dia
+                if(startFinishSameDay== 0){
 
-                        case 0:
+                    //console.log("Mismo dia en th:"+formLabDateStartF+"- "+payTypeServ+"- "+catServ+"- "+isBH+ "- "+ isSunday)
 
-                            var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+                    if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
 
-                            formHRS= diff;
+                        dateStart= new Date(empHoursArray[x].formLabDateStart);
+                        dateFinish= new Date(empHoursArray[x].formLabDateFinish);
 
-                            break;
+                        //Son horas asignadas por el usuario o por el GESAD?
+                        formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
+                        
+                        switch(formHrsAssignType){
 
-                        case 1:
+                            case 0:
 
-                            formHRS= parseFloat(empHoursArray[x].formHRS)
+                                var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
 
-                            break;
+                                formHRS= diff;
+
+                                break;
+
+                            case 1:
+
+                                formHRS= parseFloat(empHoursArray[x].formHRS)
+
+                                break;
+
+                        }
 
                     }
 
                 }
+                
+                if(startFinishSameDay== 1){
+
+                    //console.log("dias distintos en th:"+formLabDateStartF+"- "+payTypeServ+"- "+catServ+"- "+isBH+ "- "+ isSunday)
+
+                    if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
+
+                        dateStart= new Date(empHoursArray[x].formLabDateStart);
+                        dateFinish= new Date(empHoursArray[x].formLabDateFinish);
+                        //dateFinish.setHours(0);
+                        
+
+                        //Son horas asignadas por el usuario o por el GESAD?
+                        formHrsAssignType= parseInt(empHoursArray[x].formHrsAssignType);
+                        
+                        switch(formHrsAssignType){
+
+                            case 0:
+
+                                var diff = ( dateFinish.getTime()- dateStart.getTime()) / 3600000;
+
+                                formHRS= diff;
+
+                                break;
+
+                            case 1:
+
+                                formHRS= parseFloat(empHoursArray[x].formHRS)
+
+                                break;
+
+                        }
+
+                    }
+                    
+                }
+
 
             }
 
@@ -921,9 +973,10 @@ function fillHoursTable(){
                 //Empieza y termina el mismo dia su turno?
                 let startFinishSameDay= 0;
                 formLabDateStartF != formLabDateFinishF? startFinishSameDay= 1:"";
+                startFinishSameDay=parseInt(startFinishSameDay);
 
                 //Si empieza y termina el mismo dia
-                if(formLabDateStartF==0){
+                if(startFinishSameDay==0){
 
                     if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==1 ){
 
@@ -981,7 +1034,7 @@ function fillHoursTable(){
                 }
 
                 //Si empieza un dia y termina otro
-                if(formLabDateStartF==1){
+                if(startFinishSameDay==1){
 
 
                 }
