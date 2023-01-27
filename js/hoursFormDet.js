@@ -841,10 +841,20 @@ function fillHoursTable(){
                 if(startFinishSameDay== 1){
 
                     //console.log("dias distintos en th:"+formLabDateStartF+"- "+payTypeServ+"- "+catServ+"- "+isBH+ "- "+ isSunday)
-                    let nextDayGridDate= date2.setDate(date2.getDate() + 0);
-                    let nextDayGridDateF= formatoFecha(nextDayGridDate,1);
 
-                    console.log(nextDayGridDateF);
+                    console.log(formLabDateFinishF);
+
+                    //es bankholiday?
+                    for(x in BHArray){
+
+                        if(formLabDateFinishF== BHArray[x].datebh){
+                            
+                            isBH=1;
+                        }
+                    }
+
+                    //es domingo??
+                    let isSunday= formatoFecha(gridDate,2)
 
                 //     if(gridDateF== formLabDateStartF && payTypeServ=="Extra" && catServ=="OT" && isBH==0 && isSunday!=0){
 
