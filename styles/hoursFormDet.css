@@ -141,7 +141,8 @@
 #hrsEditDiv{
 
     position: absolute;
-    top: 30%;
+    top: 15%;
+    bottom: 0px;
     background-color: rgb(195, 195, 195);
     height: 300px;
     border-style: solid;
